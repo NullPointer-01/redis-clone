@@ -20,10 +20,15 @@ public class ClientConnectionThread extends Thread {
     public void run() {
         try {
             OutputStream outputStream = client.getOutputStream();
+            InputStream inputStream = client.getInputStream();
 
             String response = "+PONG\r\n";
-            outputStream.write(response.getBytes());
-            outputStream.flush();
+            byte[] buffer = new byte[1024];
+            int data;
+
+            while ((data = inputStream.read(buffer)) != -1) {
+                outputStream.write(response.getBytes());
+            }
         } catch (IOException e) {
            LOGGER.log(Level.SEVERE, "Exception processing client connection. " + e);
         } finally {
