@@ -1,8 +1,8 @@
 package core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import util.RespSerializer;
+
+import java.io.*;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,19 +18,28 @@ public class ClientConnectionThread extends Thread {
 
     @Override
     public void run() {
-        try {
-            OutputStream outputStream = client.getOutputStream();
-            InputStream inputStream = client.getInputStream();
+        try (OutputStream outputStream = client.getOutputStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()))) {
 
-            String response = "+PONG\r\n";
-            byte[] buffer = new byte[1024];
-            int data;
+            String PONG = "+PONG\r\n";
+            String line;
 
-            while ((data = inputStream.read(buffer)) != -1) {
-                outputStream.write(response.getBytes());
+            while ((line = reader.readLine()) != null) {
+                switch (line) {
+                    case "PING":
+                        outputStream.write(PONG.getBytes());
+                        break;
+                    case "ECHO":
+                        reader.readLine(); // Skip CRLF
+                        String arg = reader.readLine();
+                        String response = RespSerializer.asBulkString(arg);
+
+                        outputStream.write(response.getBytes());
+                        break;
+                }
+                outputStream.flush();
             }
         } catch (IOException e) {
-           LOGGER.log(Level.SEVERE, "Exception processing client connection. " + e);
+            LOGGER.log(Level.SEVERE, "Exception processing client connection. " + e);
         } finally {
             if (client != null) {
                 try {
