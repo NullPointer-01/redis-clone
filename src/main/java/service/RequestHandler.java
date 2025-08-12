@@ -19,7 +19,7 @@ public class RequestHandler {
         }
 
         List<Object> itemsTmp = RespDeserializer.parseArray(is);
-        List<String > items = itemsTmp.stream().map(i -> (String) i).toList();
+        List<String> items = itemsTmp.stream().map(i -> (String) i).toList();
         Command command = Command.getCommandByName(items.get(0));
 
         switch (command) {
@@ -36,8 +36,11 @@ public class RequestHandler {
             case GET:
                 requests.add(new GetRequest(items.get(1)));
                 break;
+            case RPUSH:
+                requests.add(new RPushRequest(items.get(1), items.subList(2, items.size())));
+                break;
             default:
-                throw new IOException("Invalid command");
+                throw new IOException("Invalid command " + command);
         }
 
         return requests;

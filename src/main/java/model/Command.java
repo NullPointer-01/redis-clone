@@ -4,7 +4,8 @@ public enum Command {
     PING("PING"),
     ECHO("ECHO"),
     SET("SET"),
-    GET("GET");
+    GET("GET"),
+    RPUSH("RPUSH");
 
     private final String name;
 
@@ -23,6 +24,6 @@ public enum Command {
             }
         }
 
-        throw new IllegalArgumentException("Invalid command");
+        throw new IllegalArgumentException("Invalid command " + name);
     }
 }

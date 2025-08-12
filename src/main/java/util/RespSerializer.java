@@ -12,4 +12,9 @@ public class RespSerializer {
 
         return String.valueOf(DOLLAR) + length + CRLF + data + CRLF;
     }
+
+    public static String asInteger(Integer value) {
+        String sign = value < 0 ? "-" : "";
+        return COLON + sign + value + CRLF;
+    }
 }

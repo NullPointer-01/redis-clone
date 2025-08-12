@@ -3,6 +3,7 @@ package util;
 public class RespConstants {
     public static final Character ASTERISK = '*';
     public static final Character DOLLAR = '$';
+    public static final Character COLON = ':';
 
     public static final Character CR = '\r';
     public static final Character LF = '\n';

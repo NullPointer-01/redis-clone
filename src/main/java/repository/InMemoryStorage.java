@@ -1,27 +1,27 @@
 package repository;
 
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryStorage<K, V> implements Storage<K, V> {
-    private final Map<K, Map.Entry<Long,V>> map;
+    private final Map<K, Map.Entry<Long,V>> valuesMap;
+    private final Map<K, List<V>> listsMap;
 
     InMemoryStorage() {
-        map = new ConcurrentHashMap<>();
+        valuesMap = new ConcurrentHashMap<>();
+        listsMap = new ConcurrentHashMap<>();
     }
 
     @Override
     public void set(K key, V value, Long timeToExpireInMillis) {
         Long expiryTimeInMillis = timeToExpireInMillis == null ? Long.MAX_VALUE : System.currentTimeMillis() + timeToExpireInMillis;
-        map.put(key, new AbstractMap.SimpleEntry<>(expiryTimeInMillis, value));
+        valuesMap.put(key, new AbstractMap.SimpleEntry<>(expiryTimeInMillis, value));
     }
 
     @Override
     public Optional<V> get(K key) {
-        if (map.containsKey(key)) {
-            Map.Entry<Long, V> entry = map.get(key);
+        if (valuesMap.containsKey(key)) {
+            Map.Entry<Long, V> entry = valuesMap.get(key);
             Long expiryTimeInMillis = entry.getKey();
 
             if (expiryTimeInMillis <= System.currentTimeMillis()) {
@@ -32,5 +32,14 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public Integer rPush(K listKey, List<V> elements) {
+        listsMap.computeIfAbsent(listKey, k -> new LinkedList<>());
+
+        List<V> list = listsMap.get(listKey);
+        list.addAll(elements);
+        return list.size();
     }
 }
