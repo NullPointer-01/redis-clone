@@ -2,16 +2,17 @@ package model;
 
 import util.RespSerializer;
 
-import java.util.List;
-
 public class EchoRequest extends Request {
+    private final String arg;
+
     public EchoRequest(String arg) {
-        super(Command.ECHO, List.of(arg));
+        super(Command.ECHO);
+        this.arg = arg;
     }
 
     @Override
     public Response execute() {
-        String response = RespSerializer.asBulkString(args.get(0).toString());
+        String response = RespSerializer.asBulkString(arg);
         return new Response(response);
     }
 }
