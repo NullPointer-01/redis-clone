@@ -30,7 +30,8 @@ public class RequestHandler {
                 requests.add(new EchoRequest(items.get(1)));
                 break;
             case SET:
-                requests.add(new SetRequest(items.get(1), items.get(2)));
+                Long timeToExpireInMillis = items.size() == 3 ? null : Long.parseLong(items.get(4));
+                requests.add(new SetRequest(items.get(1), items.get(2), timeToExpireInMillis));
                 break;
             case GET:
                 requests.add(new GetRequest(items.get(1)));
