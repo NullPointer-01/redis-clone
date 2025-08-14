@@ -5,7 +5,8 @@ public enum Command {
     ECHO("ECHO"),
     SET("SET"),
     GET("GET"),
-    RPUSH("RPUSH");
+    RPUSH("RPUSH"),
+    LRANGE("LRANGE");
 
     private final String name;
 

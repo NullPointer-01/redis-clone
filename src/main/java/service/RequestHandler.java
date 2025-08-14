@@ -39,6 +39,9 @@ public class RequestHandler {
             case RPUSH:
                 requests.add(new RPushRequest(items.get(1), items.subList(2, items.size())));
                 break;
+            case LRANGE:
+                requests.add(new LRangeRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
+                break;
             default:
                 throw new IOException("Invalid command " + command);
         }

@@ -42,4 +42,23 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
         list.addAll(elements);
         return list.size();
     }
+
+    @Override
+    public List<V> lRange(K listKey, int startIdx, int endIdx) {
+        List<V> list = listsMap.get(listKey);
+        if (list == null || list.isEmpty()) return Collections.emptyList();
+
+        int size = list.size();
+        if (startIdx < 0) {
+            startIdx = Math.max(0, startIdx+size);
+        }
+        if (endIdx < 0) {
+            endIdx = Math.max(0, endIdx+size);
+        }
+
+        if (startIdx > endIdx || startIdx >= size) return Collections.emptyList();
+
+        endIdx = Math.min(endIdx, size-1);
+        return list.subList(startIdx, endIdx+1);
+    }
 }
