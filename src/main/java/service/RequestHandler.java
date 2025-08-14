@@ -20,7 +20,7 @@ public class RequestHandler {
 
         List<Object> itemsTmp = RespDeserializer.parseArray(is);
         List<String> items = itemsTmp.stream().map(i -> (String) i).toList();
-        Command command = Command.getCommandByName(items.get(0));
+        Command command = Command.getCommandByName(items.get(0).toUpperCase());
 
         switch (command) {
             case PING:
