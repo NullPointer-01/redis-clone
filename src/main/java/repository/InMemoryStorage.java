@@ -44,6 +44,17 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
     }
 
     @Override
+    public Integer lPush(K listKey, List<V> elements) {
+        listsMap.computeIfAbsent(listKey, k -> new LinkedList<>());
+
+        List<V> list = listsMap.get(listKey);
+        for (V ele : elements) {
+            list.add(0, ele);
+        }
+        return list.size();
+    }
+
+    @Override
     public List<V> lRange(K listKey, int startIdx, int endIdx) {
         List<V> list = listsMap.get(listKey);
         if (list == null || list.isEmpty()) return Collections.emptyList();
