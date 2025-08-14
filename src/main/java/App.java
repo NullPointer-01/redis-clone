@@ -2,16 +2,17 @@ import conf.Configuration;
 import conf.ConfigurationManager;
 import core.ServerListenerThread;
 
-import java.util.logging.Logger;
-
 public class App {
-
-    private static final Logger LOGGER = Logger.getLogger(App.class.getName());
-    private static final String CONFIGURATION_FILE_PATH = "src/main/resources/conf/config.properties";
+    private static final String PORT_ARG = "--port";
 
     public static void main(String[] args) {
+        int port = 6379;
+        if (PORT_ARG.equals(args[0])) {
+            port = Integer.parseInt(args[1]);
+        }
+
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();
-        configurationManager.loadConfiguration(CONFIGURATION_FILE_PATH);
+        configurationManager.loadConfiguration(port);
         Configuration conf = configurationManager.getConfiguration();
 
         // Start server in separate thread

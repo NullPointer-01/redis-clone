@@ -1,16 +1,6 @@
 package conf;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class ConfigurationManager {
-    private static final Logger LOGGER = Logger.getLogger(ConfigurationManager.class.getName());
-
     private static ConfigurationManager configurationManager;
     private static Configuration conf;
 
@@ -25,17 +15,8 @@ public class ConfigurationManager {
         return configurationManager;
     }
 
-    public void loadConfiguration(String filePath) {
-        Properties properties = new Properties();
-
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
-            properties.load(inputStream);
-
-            String port = properties.getProperty("port");
-            conf = new Configuration(Integer.parseInt(port));
-        } catch (IOException e) {
-            LOGGER.log(Level.CONFIG, "Exception loading conf properties");
-        }
+    public void loadConfiguration(int port) {
+        conf = new Configuration(port);
     }
 
     public Configuration getConfiguration() {
