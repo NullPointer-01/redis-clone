@@ -42,6 +42,10 @@ public class RequestHandler {
             case LPUSH:
                 requests.add(new LPushRequest(items.get(1), items.subList(2, items.size())));
                 break;
+            case LPOP:
+                Integer count = items.size() == 3 ? Integer.parseInt(items.get(2)) : null;
+                requests.add(new LPopRequest(items.get(1), count));
+                break;
             case LRANGE:
                 requests.add(new LRangeRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
                 break;

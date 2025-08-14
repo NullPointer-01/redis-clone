@@ -10,6 +10,7 @@ public interface Storage<K, V> {
     Integer rPush(K listKey, List<V> elements);
     Integer lPush(K listKey, List<V> elements);
 
+    List<V> lPop(K listKey, int count);
     List<V> lRange(K listKey, int startIdx, int endIdx);
 
     Integer lLen(K listKey);

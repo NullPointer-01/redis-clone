@@ -8,6 +8,7 @@ public enum Command {
     RPUSH("RPUSH"),
     LPUSH("LPUSH"),
     LLEN("LLEN"),
+    LPOP("LPOP"),
     LRANGE("LRANGE");
 
     private final String name;

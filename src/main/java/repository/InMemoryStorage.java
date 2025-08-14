@@ -55,6 +55,26 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
     }
 
     @Override
+    public List<V> lPop(K listKey, int count) {
+        List<V> list = listsMap.get(listKey);
+        if (list == null || list.isEmpty()) return Collections.emptyList();
+
+        List<V> poppedElements;
+        if (count >= list.size()) {
+            poppedElements = new LinkedList<>(list);
+            list.clear();
+
+            return poppedElements;
+        }
+
+        poppedElements = new LinkedList<>();
+        for (int i = 0; i < count; i++) {
+            poppedElements.add(list.remove(0));
+        }
+        return poppedElements;
+    }
+
+    @Override
     public List<V> lRange(K listKey, int startIdx, int endIdx) {
         List<V> list = listsMap.get(listKey);
         if (list == null || list.isEmpty()) return Collections.emptyList();
