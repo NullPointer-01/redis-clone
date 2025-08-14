@@ -45,6 +45,9 @@ public class RequestHandler {
             case LRANGE:
                 requests.add(new LRangeRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
                 break;
+            case LLEN:
+                requests.add(new LLenRequest(items.get(1)));
+                break;
             default:
                 throw new IOException("Invalid command " + command);
         }

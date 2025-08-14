@@ -72,4 +72,9 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
         endIdx = Math.min(endIdx, size-1);
         return list.subList(startIdx, endIdx+1);
     }
+
+    @Override
+    public Integer lLen(K listKey) {
+        return listsMap.containsKey(listKey) ? listsMap.get(listKey).size() : 0;
+    }
 }
