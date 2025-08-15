@@ -1,5 +1,7 @@
 package model;
 
+import java.nio.charset.StandardCharsets;
+
 public class Response {
     private final String response;
 
@@ -8,6 +10,6 @@ public class Response {
     }
 
     public byte[] getResponse() {
-        return response.getBytes();
+        return response.getBytes(StandardCharsets.UTF_8);
     }
 }

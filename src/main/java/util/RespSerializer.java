@@ -1,5 +1,6 @@
 package util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static util.RespConstants.*;
@@ -9,8 +10,12 @@ public class RespSerializer {
     private RespSerializer() {}
 
     public static String asBulkString(String data) {
-        int length = data.length();
-        if (length == 0) return EMPTY_BULK_STRING;
+        if (data == null || data.isEmpty()) {
+            return EMPTY_BULK_STRING;
+        }
+
+        byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
+        int length = dataBytes.length; // Get bytes length in UTF-8
 
         return String.valueOf(DOLLAR) + length + CRLF + data + CRLF;
     }
