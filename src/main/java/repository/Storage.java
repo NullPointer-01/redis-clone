@@ -14,4 +14,5 @@ public interface Storage<K, V> {
     List<V> lRange(K listKey, int startIdx, int endIdx);
 
     Integer lLen(K listKey);
+    Integer delete(List<K> keys);
 }

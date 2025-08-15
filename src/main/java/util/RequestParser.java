@@ -41,6 +41,9 @@ public class RequestParser {
                 case GET:
                     requests.add(new GetRequest(items.get(1)));
                     break;
+                case DEL:
+                    requests.add(new DelRequest(items.subList(2, items.size())));
+                    break;
                 case RPUSH:
                     requests.add(new RPushRequest(items.get(1), items.subList(2, items.size())));
                     break;

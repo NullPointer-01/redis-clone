@@ -97,4 +97,18 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
     public Integer lLen(K listKey) {
         return listsMap.containsKey(listKey) ? listsMap.get(listKey).size() : 0;
     }
+
+    @Override
+    public Integer delete(List<K> keys) {
+        int count = 0;
+
+        for (K key : keys) {
+            boolean isValuesKeyRemoved = valuesMap.remove(key) != null;
+            boolean isListKeyRemoved = listsMap.remove(key) != null;
+
+            if (isValuesKeyRemoved || isListKeyRemoved) count++;
+        }
+
+        return count;
+    }
 }

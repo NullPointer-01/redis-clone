@@ -6,6 +6,7 @@ public enum Command {
 
     SET("SET"),
     GET("GET"),
+    DEL("DEL"),
 
     RPUSH("RPUSH"),
     LPUSH("LPUSH"),
