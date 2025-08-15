@@ -7,7 +7,7 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
     private final Map<K, Map.Entry<Long,V>> valuesMap;
     private final Map<K, List<V>> listsMap;
 
-    InMemoryStorage() {
+    public InMemoryStorage() {
         valuesMap = new ConcurrentHashMap<>();
         listsMap = new ConcurrentHashMap<>();
     }
