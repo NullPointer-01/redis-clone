@@ -1,6 +1,9 @@
 package conf;
 
 import conf.ConfigurationConstants.ROLE;
+import core.MasterServer;
+import core.Server;
+import core.SlaveServer;
 
 public class ConfigurationUtil {
     public static Configuration getConfigurationFromArgs(String[] args) {
@@ -39,5 +42,9 @@ public class ConfigurationUtil {
         conf.setRole(role);
 
         return conf;
+    }
+
+    public static Server getServerByConf(Configuration conf) {
+        return conf.isMaster() ? new MasterServer(conf) : new SlaveServer(conf);
     }
 }

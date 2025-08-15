@@ -12,7 +12,7 @@ public class App {
         configurationManager.loadConfiguration(conf);
 
         // Start server in separate thread
-        Server server = new Server(conf);
+        Server server = ConfigurationUtil.getServerByConf(conf);
         server.start();
     }
 }

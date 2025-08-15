@@ -2,7 +2,7 @@ package conf;
 
 import conf.ConfigurationConstants.ROLE;
 
-public class Configuration {
+public abstract class Configuration {
     private ROLE role;
     private Integer port;
 
