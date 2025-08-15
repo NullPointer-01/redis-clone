@@ -15,8 +15,8 @@ public class ConfigurationManager {
         return configurationManager;
     }
 
-    public void loadConfiguration(int port) {
-        conf = new Configuration(port);
+    public void loadConfiguration(Configuration configuration) {
+        conf = configuration;
     }
 
     public Configuration getConfiguration() {
