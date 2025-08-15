@@ -27,15 +27,13 @@ public class RequestHandler extends Thread {
              BufferedInputStream bis = new BufferedInputStream(client.getInputStream())) {
 
             while (client.isConnected()) {
-                if (bis.available() > 0) {
-                    List<Request> requests = RequestParser.parseRequests(bis);
+                List<Request> requests = RequestParser.parseRequests(bis);
 
-                    for (Request request : requests) {
-                        Response response = request.execute();
+                for (Request request : requests) {
+                    Response response = request.execute();
 
-                        outputStream.write(response.getResponse());
-                        outputStream.flush();
-                    }
+                    outputStream.write(response.getResponse());
+                    outputStream.flush();
                 }
             }
         } catch (IOException e) {
