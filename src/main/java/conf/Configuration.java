@@ -24,4 +24,8 @@ public class Configuration {
     public void setPort(Integer port) {
         this.port = port;
     }
+
+    public boolean isMaster() {
+        return ROLE.MASTER.equals(role);
+    }
 }
