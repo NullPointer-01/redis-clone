@@ -1,18 +1,22 @@
 package requests;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import repository.RepositoryManager;
 import repository.Storage;
 import requests.model.Response;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static util.RespConstants.OK_SIMPLE_STRING;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SetRequestTest {
     private Storage<String, String> storage;
 
-    @BeforeEach
+    @BeforeAll
     public void init() {
         storage = RepositoryManager.getInstance();
     }
@@ -28,6 +32,8 @@ public class SetRequestTest {
         assertTrue(storage.get(key).isPresent());
         assertEquals(value, storage.get(key).get());
         assertArrayEquals(OK_SIMPLE_STRING.getBytes(), response.getResponse());
+
+        storage.delete(List.of(key)); // Cleanup
     }
 
     @Test
@@ -48,6 +54,8 @@ public class SetRequestTest {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
         assertArrayEquals(OK_SIMPLE_STRING.getBytes(), response.getResponse());
+        storage.delete(List.of(key)); // Cleanup
     }
 }
