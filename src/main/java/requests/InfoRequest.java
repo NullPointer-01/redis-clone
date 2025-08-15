@@ -1,8 +1,10 @@
-package model;
+package requests;
 
 import conf.Configuration;
 import conf.ConfigurationManager;
 import conf.MasterConfiguration;
+import requests.model.Command;
+import requests.model.Response;
 import util.RespSerializer;
 
 import static util.RespConstants.CRLF;

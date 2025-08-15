@@ -1,4 +1,7 @@
-package model;
+package requests;
+
+import requests.model.Command;
+import requests.model.Response;
 
 import static util.RespConstants.PONG_SIMPLE_STRING;
 

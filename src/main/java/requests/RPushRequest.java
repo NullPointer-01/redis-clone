@@ -1,7 +1,9 @@
-package model;
+package requests;
 
 import repository.RepositoryManager;
 import repository.Storage;
+import requests.model.Command;
+import requests.model.Response;
 import util.RespSerializer;
 
 import java.util.List;

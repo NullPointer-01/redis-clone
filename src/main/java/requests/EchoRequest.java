@@ -1,5 +1,7 @@
-package model;
+package requests;
 
+import requests.model.Command;
+import requests.model.Response;
 import util.RespSerializer;
 
 public class EchoRequest extends Request {

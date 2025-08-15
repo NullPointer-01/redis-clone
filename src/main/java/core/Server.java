@@ -1,6 +1,7 @@
 package core;
 
 import conf.Configuration;
+import service.RequestHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -9,12 +10,12 @@ import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ServerListenerThread extends Thread {
-    private static final Logger LOGGER = Logger.getLogger(ServerListenerThread.class.getName());
+public class Server extends Thread {
+    private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
 
     private final Configuration conf;
 
-    public ServerListenerThread(Configuration conf) {
+    public Server(Configuration conf) {
         this.conf = conf;
     }
 
@@ -25,7 +26,7 @@ public class ServerListenerThread extends Thread {
 
             while (serverSocket.isBound() && !serverSocket.isClosed()) {
                 Socket client = serverSocket.accept();
-                new ClientConnectionThread(client).start();
+                new RequestHandler(client).start();
             }
         } catch (SocketException e) {
             throw new RuntimeException(e);

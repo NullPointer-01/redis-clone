@@ -1,7 +1,7 @@
 import conf.Configuration;
 import conf.ConfigurationManager;
 import conf.ConfigurationUtil;
-import core.ServerListenerThread;
+import core.Server;
 
 public class App {
 
@@ -12,6 +12,7 @@ public class App {
         configurationManager.loadConfiguration(conf);
 
         // Start server in separate thread
-        new ServerListenerThread(conf).start();
+        Server server = new Server(conf);
+        server.start();
     }
 }

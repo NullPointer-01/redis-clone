@@ -1,7 +1,9 @@
-package model;
+package requests;
 
 import repository.RepositoryManager;
 import repository.Storage;
+import requests.model.Command;
+import requests.model.Response;
 
 import static util.RespConstants.OK_SIMPLE_STRING;
 

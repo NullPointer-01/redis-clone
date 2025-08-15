@@ -1,4 +1,4 @@
-package model;
+package requests.model;
 
 public enum Command {
     PING("PING"),
