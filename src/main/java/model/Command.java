@@ -3,13 +3,17 @@ package model;
 public enum Command {
     PING("PING"),
     ECHO("ECHO"),
+
     SET("SET"),
     GET("GET"),
+
     RPUSH("RPUSH"),
     LPUSH("LPUSH"),
     LLEN("LLEN"),
     LPOP("LPOP"),
-    LRANGE("LRANGE");
+    LRANGE("LRANGE"),
+
+    INFO("INFO");
 
     private final String name;
 

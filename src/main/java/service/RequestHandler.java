@@ -52,6 +52,9 @@ public class RequestHandler {
             case LLEN:
                 requests.add(new LLenRequest(items.get(1)));
                 break;
+            case INFO:
+                requests.add(new InfoRequest());
+                break;
             default:
                 throw new IOException("Invalid command " + command);
         }
