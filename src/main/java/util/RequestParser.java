@@ -63,6 +63,12 @@ public class RequestParser {
                 case INFO:
                     requests.add(new InfoRequest());
                     break;
+                case REPLCONF:
+                    requests.add(new ReplConfRequest());
+                    break;
+                case PSYNC:
+                    requests.add(new PSyncRequest());
+                    break;
                 default:
                     throw new IOException("Invalid command " + command);
             }

@@ -17,7 +17,7 @@ public abstract class Configuration {
         this.role = role;
     }
 
-    public int getPort() {
+    public Integer getPort() {
         return port;
     }
 

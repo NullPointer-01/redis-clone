@@ -14,7 +14,9 @@ public enum Command {
     LPOP("LPOP"),
     LRANGE("LRANGE"),
 
-    INFO("INFO");
+    INFO("INFO"),
+    REPLCONF("REPLCONF"),
+    PSYNC("PSYNC");
 
     private final String name;
 
