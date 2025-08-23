@@ -1,4 +1,4 @@
-package requests;
+package requests.master;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-public class LLenRequestTest {
+public class LLenMasterRequestTest {
 
     private static Storage<String, String> storage;
 
@@ -24,8 +24,8 @@ public class LLenRequestTest {
         String listKey = "myList";
         storage.lPush(listKey, Arrays.asList("one", "two", "three"));
 
-        LLenRequest lLenRequest = new LLenRequest(listKey);
-        Response response = lLenRequest.execute();
+        LLenMasterRequest lLenRequest = new LLenMasterRequest(listKey);
+        Response response = lLenRequest.doExecute();
 
         assertArrayEquals(":3\r\n".getBytes(), response.getResponse());
     }
@@ -34,8 +34,8 @@ public class LLenRequestTest {
     public void shouldReturnZeroForMissingList() {
         String listKey = "lLenMissingList";
 
-        LLenRequest lLenRequest = new LLenRequest(listKey);
-        Response response = lLenRequest.execute();
+        LLenMasterRequest lLenRequest = new LLenMasterRequest(listKey);
+        Response response = lLenRequest.doExecute();
 
         assertArrayEquals(":0\r\n".getBytes(), response.getResponse());
     }

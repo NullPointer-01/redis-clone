@@ -1,4 +1,4 @@
-package requests;
+package requests.master;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static util.RespConstants.OK_SIMPLE_STRING;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SetRequestTest {
+public class SetMasterRequestTest {
     private Storage<String, String> storage;
 
     @BeforeAll
@@ -26,8 +26,8 @@ public class SetRequestTest {
         String key = "key";
         String value = "value";
 
-        SetRequest setRequest = new SetRequest(key, value, null);
-        Response response = setRequest.execute();
+        SetMasterRequest setRequest = new SetMasterRequest(key, value, null);
+        Response response = setRequest.doExecute();
 
         assertTrue(storage.get(key).isPresent());
         assertEquals(value, storage.get(key).get());
@@ -42,8 +42,8 @@ public class SetRequestTest {
         String value = "value";
         Long ttl = 100L;
 
-        SetRequest setRequest = new SetRequest(key, value, ttl);
-        Response response = setRequest.execute();
+        SetMasterRequest setRequest = new SetMasterRequest(key, value, ttl);
+        Response response = setRequest.doExecute();
 
         assertTrue(storage.get(key).isPresent());
         assertEquals(value, storage.get(key).get());

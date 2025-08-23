@@ -1,4 +1,4 @@
-package requests;
+package requests.master;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class DelRequestTest {
+public class DelMasterRequestTest {
     private Storage<String, String> storage;
 
     @BeforeAll
@@ -28,8 +28,8 @@ public class DelRequestTest {
             storage.set(key, "value", null);
         }
 
-        DelRequest delRequest = new DelRequest(List.of("key1", "key2"));
-        Response response = delRequest.execute();
+        DelMasterRequest delRequest = new DelMasterRequest(List.of("key1", "key2"));
+        Response response = delRequest.doExecute();
 
         // Key1 and Key2 should be deleted
         assertNull(storage.get("key1").orElse(null));
@@ -49,8 +49,8 @@ public class DelRequestTest {
             storage.lPush(key, List.of("value1", "value2"));
         }
 
-        DelRequest delRequest = new DelRequest(List.of("key1"));
-        Response response = delRequest.execute();
+        DelMasterRequest delRequest = new DelMasterRequest(List.of("key1"));
+        Response response = delRequest.doExecute();
 
         assertArrayEquals(":1\r\n".getBytes(), response.getResponse());
 

@@ -1,4 +1,4 @@
-package requests;
+package requests.master;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static util.RespConstants.EMPTY_RESP_ARRAY;
 
-public class LRangeRequestTest {
+public class LRangeMasterRequestTest {
 
     private static Storage<String, String> storage;
 
@@ -29,8 +29,8 @@ public class LRangeRequestTest {
         List<String> elements = Arrays.asList("one", "two", "three");
         storage.lPush(listKey, elements);
 
-        LRangeRequest request = new LRangeRequest(listKey, 0, 2);
-        Response response = request.execute();
+        LRangeMasterRequest request = new LRangeMasterRequest(listKey, 0, 2);
+        Response response = request.doExecute();
 
         // Elements in reverse order
         List<String> expectedElements = Arrays.asList("three", "two", "one");
@@ -48,8 +48,8 @@ public class LRangeRequestTest {
         List<String> elements = Arrays.asList("one", "two", "three");
         storage.lPush(listKey, elements);
 
-        LRangeRequest request = new LRangeRequest(listKey, 0, 2);
-        Response response = request.execute();
+        LRangeMasterRequest request = new LRangeMasterRequest(listKey, 0, 2);
+        Response response = request.doExecute();
 
         // Elements in reverse order
         List<String> expectedElements = Arrays.asList("three", "two", "one");
@@ -68,8 +68,8 @@ public class LRangeRequestTest {
         List<String> elements = Arrays.asList("one", "two", "three", "four", "five");
         storage.rPush(listKey, elements);
 
-        LRangeRequest request = new LRangeRequest(listKey, 1, -2);
-        Response response = request.execute();
+        LRangeMasterRequest request = new LRangeMasterRequest(listKey, 1, -2);
+        Response response = request.doExecute();
 
         List<String> expectedElements = Arrays.asList("two", "three", "four");
 
@@ -87,8 +87,8 @@ public class LRangeRequestTest {
         List<String> elements = Arrays.asList("one", "two", "three", "four", "five");
         storage.rPush(listKey, elements);
 
-        LRangeRequest request = new LRangeRequest(listKey, -5, -2);
-        Response response = request.execute();
+        LRangeMasterRequest request = new LRangeMasterRequest(listKey, -5, -2);
+        Response response = request.doExecute();
 
         List<String> expectedElements = Arrays.asList("one", "two", "three", "four");
 
@@ -107,8 +107,8 @@ public class LRangeRequestTest {
         storage.rPush(listKey, elements);
 
         // StartIdx is considered as  0
-        LRangeRequest request = new LRangeRequest(listKey, -6, 3);
-        Response response = request.execute();
+        LRangeMasterRequest request = new LRangeMasterRequest(listKey, -6, 3);
+        Response response = request.doExecute();
 
         List<String> expectedElements = Arrays.asList("one", "two", "three", "four");
 
@@ -123,8 +123,8 @@ public class LRangeRequestTest {
     public void shouldReturnEmptyArrayForMissingList() {
         String listKey = "missingList";
 
-        LRangeRequest request = new LRangeRequest(listKey, 0, 10);
-        Response response = request.execute();
+        LRangeMasterRequest request = new LRangeMasterRequest(listKey, 0, 10);
+        Response response = request.doExecute();
 
         String actualResp = new String(response.getResponse(), StandardCharsets.UTF_8);
         assertEquals(EMPTY_RESP_ARRAY, actualResp);
@@ -135,8 +135,8 @@ public class LRangeRequestTest {
         String listKey = "outOfRangeList";
         storage.lPush(listKey, Arrays.asList("one", "two"));
 
-        LRangeRequest request = new LRangeRequest(listKey, 10, 20);
-        Response response = request.execute();
+        LRangeMasterRequest request = new LRangeMasterRequest(listKey, 10, 20);
+        Response response = request.doExecute();
 
         String actualResp = new String(response.getResponse(), StandardCharsets.UTF_8);
         assertEquals(EMPTY_RESP_ARRAY, actualResp);
@@ -147,8 +147,8 @@ public class LRangeRequestTest {
         String listKey = "invalidRangeList";
         storage.lPush(listKey, Arrays.asList("one", "two", "three", "four"));
 
-        LRangeRequest request = new LRangeRequest(listKey, 3, 1);
-        Response response = request.execute();
+        LRangeMasterRequest request = new LRangeMasterRequest(listKey, 3, 1);
+        Response response = request.doExecute();
 
         String actualResp = new String(response.getResponse(), StandardCharsets.UTF_8);
         assertEquals(EMPTY_RESP_ARRAY, actualResp);

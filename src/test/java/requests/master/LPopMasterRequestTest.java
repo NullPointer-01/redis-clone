@@ -1,4 +1,4 @@
-package requests;
+package requests.master;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static util.RespConstants.EMPTY_RESP_ARRAY;
 import static util.RespConstants.NULL_BULK_STRING;
 
-public class LPopRequestTest {
+public class LPopMasterRequestTest {
 
     private static Storage<String, String> storage;
 
@@ -30,8 +30,8 @@ public class LPopRequestTest {
         String listKey = "myList";
         storage.lPush(listKey, Arrays.asList("one", "two", "three"));
 
-        LPopRequest request = new LPopRequest(listKey, null);
-        Response response = request.execute();
+        LPopMasterRequest request = new LPopMasterRequest(listKey, null);
+        Response response = request.doExecute();
 
         assertArrayEquals("$5\r\nthree\r\n".getBytes(), response.getResponse());
     }
@@ -40,8 +40,8 @@ public class LPopRequestTest {
     public void testLPopSingleElementReturnsNullBulkStringWhenEmpty() {
         String listKey = "emptyList";
 
-        LPopRequest request = new LPopRequest(listKey, null);
-        Response response = request.execute();
+        LPopMasterRequest request = new LPopMasterRequest(listKey, null);
+        Response response = request.doExecute();
 
         assertArrayEquals(NULL_BULK_STRING.getBytes(), response.getResponse());
     }
@@ -51,8 +51,8 @@ public class LPopRequestTest {
         String listKey = "myListMulti";
         storage.lPush(listKey, Arrays.asList("a", "b", "c", "d"));
 
-        LPopRequest request = new LPopRequest(listKey, 2);
-        Response response = request.execute();
+        LPopMasterRequest request = new LPopMasterRequest(listKey, 2);
+        Response response = request.doExecute();
 
         List<String> expectedElements = Arrays.asList("d", "c");
         String expectedResp = RespSerializer.asArray(expectedElements);
@@ -65,8 +65,8 @@ public class LPopRequestTest {
     public void testLPopMultipleElementsReturnsEmptyArrayWhenNone() {
         String listKey = "emptyMultiList";
 
-        LPopRequest request = new LPopRequest(listKey, 3);
-        Response response = request.execute();
+        LPopMasterRequest request = new LPopMasterRequest(listKey, 3);
+        Response response = request.doExecute();
 
         String actualResp = new String(response.getResponse(), StandardCharsets.UTF_8);
         assertEquals(EMPTY_RESP_ARRAY, actualResp);

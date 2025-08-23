@@ -1,4 +1,4 @@
-package requests;
+package requests.master;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-public class LPushRequestTest {
+public class LPushMasterRequestTest {
     private Storage<String, String> storage;
 
     @BeforeEach
@@ -25,13 +25,13 @@ public class LPushRequestTest {
         List<String> elements1 = Arrays.asList("one", "two");
         List<String> elements2 = List.of("three");
 
-        LPushRequest request1 = new LPushRequest(listKey, elements1);
-        Response response1 = request1.execute();
+        LPushMasterRequest request1 = new LPushMasterRequest(listKey, elements1);
+        Response response1 = request1.doExecute();
 
         assertArrayEquals(":2\r\n".getBytes(), response1.getResponse());
 
-        LPushRequest request2 = new LPushRequest(listKey, elements2);
-        Response response2 = request2.execute();
+        LPushMasterRequest request2 = new LPushMasterRequest(listKey, elements2);
+        Response response2 = request2.doExecute();
 
         assertArrayEquals(":3\r\n".getBytes(), response2.getResponse());
 

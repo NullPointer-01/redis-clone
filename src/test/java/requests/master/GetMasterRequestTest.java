@@ -1,4 +1,4 @@
-package requests;
+package requests.master;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static util.RespConstants.NULL_BULK_STRING;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class GetRequestTest {
+public class GetMasterRequestTest {
 
     private Storage<String, String> storage;
 
@@ -29,8 +29,8 @@ public class GetRequestTest {
 
         storage.set(key, value, null);
 
-        GetRequest getRequest = new GetRequest(key);
-        Response response = getRequest.execute();
+        GetMasterRequest getRequest = new GetMasterRequest(key);
+        Response response = getRequest.doExecute();
 
         assertArrayEquals("$7\r\nmyValue\r\n".getBytes(), response.getResponse());
 
@@ -41,8 +41,8 @@ public class GetRequestTest {
     public void shouldReturnNullForMissingKey() {
         String missingKey = "missingKey";
 
-        GetRequest getRequest = new GetRequest(missingKey);
-        Response response = getRequest.execute();
+        GetMasterRequest getRequest = new GetMasterRequest(missingKey);
+        Response response = getRequest.doExecute();
 
         assertArrayEquals(NULL_BULK_STRING.getBytes(), response.getResponse());
     }
