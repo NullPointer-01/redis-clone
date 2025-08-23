@@ -1,7 +1,8 @@
-package requests;
+package requests.slave;
 
 import repository.RepositoryManager;
 import repository.Storage;
+import requests.AbstractRequest;
 import requests.model.Command;
 import requests.model.Response;
 import util.RespSerializer;
@@ -10,16 +11,16 @@ import java.util.Optional;
 
 import static util.RespConstants.NULL_BULK_STRING;
 
-public class GetRequest extends Request {
+public class GetSlaveRequest extends AbstractRequest {
     private final String key;
 
-    public GetRequest(String key) {
+    public GetSlaveRequest(String key) {
         super(Command.GET);
         this.key = key;
     }
 
     @Override
-    public Response execute() {
+    public Response doExecute() {
         Storage<String, String> storage = RepositoryManager.getInstance();
 
         Optional<String> valueOpt = storage.get(key);

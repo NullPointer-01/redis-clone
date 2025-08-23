@@ -8,6 +8,8 @@ public enum Command {
     GET("GET"),
     DEL("DEL"),
 
+    INCR("INCR"),
+
     RPUSH("RPUSH"),
     LPUSH("LPUSH"),
     LLEN("LLEN"),
@@ -16,7 +18,13 @@ public enum Command {
 
     INFO("INFO"),
     REPLCONF("REPLCONF"),
-    PSYNC("PSYNC");
+    PSYNC("PSYNC"),
+
+    MULTI("MULTI"),
+    EXEC("EXEC"),
+
+    COMMAND("COMMAND"),
+    INVALID("");
 
     private final String name;
 
@@ -35,6 +43,6 @@ public enum Command {
             }
         }
 
-        throw new IllegalArgumentException("Invalid command " + name);
+        return INVALID;
     }
 }

@@ -1,13 +1,13 @@
 package util;
 
 public class RespConstants {
+    public static final Character APOSTROPHE = '\'';
     public static final Character ASTERISK = '*';
     public static final Character DOLLAR = '$';
     public static final Character COLON = ':';
 
     public static final Character CR = '\r';
     public static final Character LF = '\n';
-    public static final Character NULL = '\u0000';
 
     public static final String CRLF = "\r\n";
     public static final String PONG_SIMPLE_STRING = "+PONG\r\n";
@@ -19,7 +19,9 @@ public class RespConstants {
 
     public static final String EMPTY_RESP_ARRAY = "*0\r\n";
 
-    public static final String PX = "PX";
+    public static final String ERROR_UNKNOWN_COMMAND = "-ERR unknown command %s, with args beginning with: %s\r\n";
+    public static final String ERROR_NOT_AN_INTEGER = "-ERR value is not an integer or out of range\r\n";
+    public static final String ERROR_EXEC_WITHOUT_MULTI = "-ERR EXEC without MULTI\r\n";
 
     // Private constructor to prevent instantiations
     private RespConstants() {}

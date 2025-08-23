@@ -4,7 +4,7 @@ import requests.model.Command;
 import requests.model.Response;
 import util.RespSerializer;
 
-public class EchoRequest extends Request {
+public class EchoRequest extends AbstractRequest {
     private final String arg;
 
     public EchoRequest(String arg) {
@@ -13,7 +13,7 @@ public class EchoRequest extends Request {
     }
 
     @Override
-    public Response execute() {
+    public Response doExecute() {
         String response = RespSerializer.asBulkString(arg);
         return new Response(response);
     }

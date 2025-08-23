@@ -1,22 +1,22 @@
-package requests;
+package requests.slave;
 
 import conf.Configuration;
 import conf.ConfigurationManager;
-import conf.MasterConfiguration;
+import requests.AbstractRequest;
 import requests.model.Command;
 import requests.model.Response;
 import util.RespSerializer;
 
 import static util.RespConstants.CRLF;
 
-public class InfoRequest extends Request {
+public class InfoSlaveRequest extends AbstractRequest {
 
-    public InfoRequest() {
+    public InfoSlaveRequest() {
         super(Command.INFO);
     }
 
     @Override
-    public Response execute() {
+    public Response doExecute() {
         ConfigurationManager configurationManager = ConfigurationManager.getInstance();
         Configuration configuration = configurationManager.getConfiguration();
 
@@ -25,18 +25,6 @@ public class InfoRequest extends Request {
         String role = "role:" + configuration.getRole().getName();
         info.append(role);
         info.append(CRLF);
-
-        if (configuration.isMaster()) {
-            MasterConfiguration masterConfiguration = (MasterConfiguration) configuration;
-
-            String masterReplId = "master_replid:" + masterConfiguration.getMasterReplId();
-            info.append(masterReplId);
-            info.append(CRLF);
-
-            String masterOffset = "master_repl_offset:" + masterConfiguration.getMasterReplOffset();
-            info.append(masterOffset);
-            info.append(CRLF);
-        }
 
         return new Response(RespSerializer.asBulkString(info.toString()));
     }

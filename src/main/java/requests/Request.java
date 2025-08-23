@@ -1,18 +1,14 @@
 package requests;
 
 import requests.model.Command;
-import requests.model.Response;
 
-public abstract class Request {
-    protected final Command command;
+import java.io.IOException;
+import java.net.Socket;
 
-    protected Request(Command command) {
-        this.command = command;
-    }
+public interface Request {
+    Command getCommand();
 
-    public Command getCommand() {
-        return command;
-    }
+    void execute(Socket client) throws IOException;
 
-    public abstract Response execute();
+    default void postExecute(Socket client) {}
 }
