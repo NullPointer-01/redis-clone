@@ -99,6 +99,9 @@ public class RequestParser {
             case EXEC:
                 requests.add(new ExecMasterRequest());
                 break;
+            case DISCARD:
+                requests.add(new DiscardMasterRequest());
+                break;
             default:
                 requests.add(new InvalidRequest(items));
         }

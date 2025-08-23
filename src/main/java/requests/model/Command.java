@@ -22,6 +22,7 @@ public enum Command {
 
     MULTI("MULTI"),
     EXEC("EXEC"),
+    DISCARD("DISCARD"),
 
     COMMAND("COMMAND"),
     INVALID("");
