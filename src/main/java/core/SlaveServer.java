@@ -3,6 +3,7 @@ package core;
 import conf.Configuration;
 import conf.SlaveConfiguration;
 import requests.Request;
+import requests.model.Client;
 import service.RequestHandler;
 import util.RequestParser;
 import util.RespSerializer;
@@ -39,8 +40,8 @@ public class SlaveServer extends Server {
             new Thread(runnable).start(); // Sync with master in separate thread
 
             while (serverSocket.isBound() && !serverSocket.isClosed()) {
-                Socket client = serverSocket.accept();
-                new RequestHandler(client).start();
+                Socket socket = serverSocket.accept();
+                new RequestHandler(socket).start();
             }
         } catch (SocketException e) {
             LOGGER.log(Level.SEVERE, "Socket Exception starting up redis slave server. " + e);
@@ -57,26 +58,31 @@ public class SlaveServer extends Server {
 
         try (Socket socket = new Socket(masterHost, masterPort)) {
 
-            initiateHandshake(socket);
-            receiveRequests(socket);
+            Client client = new Client(socket);
+
+            initiateHandshake(client);
+            receiveRequests(client);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void receiveRequests(Socket socket) throws IOException {
+    private void receiveRequests(Client client) throws IOException {
+        Socket socket = client.getSocket();
         BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
 
         while (socket.isConnected()) {
             List<Request> requests = RequestParser.parseRequests(bis, conf);
             for (Request request : requests) {
-                request.execute(socket);
+                request.execute(client);
             }
         }
     }
 
-    private void initiateHandshake(Socket socket) throws IOException {
+    private void initiateHandshake(Client client) throws IOException {
+        Socket socket = client.getSocket();
+
         OutputStream outputStream = socket.getOutputStream();
         InputStream inputStream = socket.getInputStream();
 

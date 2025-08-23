@@ -5,12 +5,12 @@ import conf.MasterConfiguration;
 import repository.RepositoryManager;
 import repository.Storage;
 import requests.AbstractRequest;
+import requests.model.Client;
 import requests.model.Command;
 import requests.model.Response;
 import service.PropagationHandler;
 import util.RespSerializer;
 
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class SetMasterRequest extends AbstractRequest {
     }
 
     @Override
-    public void postExecute(Socket ignored) {
+    public void postExecute(Client ignored) {
         MasterConfiguration masterConfiguration = (MasterConfiguration) ConfigurationManager.getInstance().getConfiguration();
 
         List<String> requestParts;

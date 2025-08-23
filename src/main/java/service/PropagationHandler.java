@@ -24,7 +24,7 @@ public class PropagationHandler {
         CompletableFuture.runAsync(() -> {
             for (Replica replica : replicas) {
                 try {
-                    OutputStream outputStream = replica.getClient().getOutputStream();
+                    OutputStream outputStream = replica.getSocket().getOutputStream();
                     outputStream.write(request);
                     outputStream.flush();
                 } catch (IOException e) {

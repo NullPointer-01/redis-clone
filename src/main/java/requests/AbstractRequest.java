@@ -1,5 +1,6 @@
 package requests;
 
+import requests.model.Client;
 import requests.model.Command;
 import requests.model.Response;
 
@@ -22,14 +23,19 @@ public abstract class AbstractRequest implements Request {
     }
 
     @Override
-    public void execute(Socket client) throws IOException {
+    public void execute(Client client) throws IOException {
+        if (client.inTransaction()) {
+
+            return;
+        }
+
         Response response = doExecute();
-        writeOutputToSocket(client, response);
+        writeOutputToSocket(client.getSocket(), response);
         postExecute(client);
     }
 
-    private static void writeOutputToSocket(Socket client, Response response) throws IOException {
-        OutputStream outputStream = client.getOutputStream();
+    private static void writeOutputToSocket(Socket socket, Response response) throws IOException {
+        OutputStream outputStream = socket.getOutputStream();
         outputStream.write(response.getResponse());
         outputStream.flush();
     }

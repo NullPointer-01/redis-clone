@@ -20,8 +20,8 @@ public class MasterServer extends Server {
             serverSocket.setReuseAddress(true);
 
             while (serverSocket.isBound() && !serverSocket.isClosed()) {
-                Socket client = serverSocket.accept();
-                new RequestHandler(client).start();
+                Socket socket = serverSocket.accept();
+                new RequestHandler(socket).start();
             }
         } catch (SocketException e) {
             throw new RuntimeException(e);

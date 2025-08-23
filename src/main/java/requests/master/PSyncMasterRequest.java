@@ -4,6 +4,7 @@ import conf.ConfigurationManager;
 import conf.MasterConfiguration;
 import core.Replica;
 import requests.AbstractRequest;
+import requests.model.Client;
 import requests.model.Command;
 import requests.model.Response;
 
@@ -11,7 +12,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.logging.Level;
@@ -36,7 +36,7 @@ public class PSyncMasterRequest extends AbstractRequest {
     }
 
     @Override
-    public void postExecute(Socket client) {
+    public void postExecute(Client client) {
         try (BufferedReader br = new BufferedReader(new FileReader(EMPTY_RDB_FILE_PATH))) {
 
             String emptyFileBase64 = br.readLine();
@@ -45,7 +45,7 @@ public class PSyncMasterRequest extends AbstractRequest {
 
             configuration.addReplica(new Replica(client));
 
-            OutputStream outputStream = client.getOutputStream();
+            OutputStream outputStream = client.getSocket().getOutputStream();
             outputStream.write(data);
             outputStream.flush();
 
