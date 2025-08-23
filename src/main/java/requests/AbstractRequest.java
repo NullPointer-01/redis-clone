@@ -9,6 +9,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.logging.Logger;
 
+import static util.RespConstants.QUEUED_SIMPLE_STRING;
+
 public abstract class AbstractRequest implements Request {
     protected static final Logger LOGGER = Logger.getLogger(AbstractRequest.class.getName());
     protected final Command command;
@@ -25,7 +27,9 @@ public abstract class AbstractRequest implements Request {
     @Override
     public void execute(Client client) throws IOException {
         if (client.inTransaction()) {
-
+            Response response = new Response(QUEUED_SIMPLE_STRING);
+            client.queueRequest(this);
+            writeOutputToSocket(client.getSocket(), response);
             return;
         }
 
@@ -40,5 +44,5 @@ public abstract class AbstractRequest implements Request {
         outputStream.flush();
     }
 
-    protected abstract Response doExecute();
+    public abstract Response doExecute();
 }

@@ -12,6 +12,7 @@ public class RespConstants {
     public static final String CRLF = "\r\n";
     public static final String PONG_SIMPLE_STRING = "+PONG\r\n";
     public static final String OK_SIMPLE_STRING = "+OK\r\n";
+    public static final String QUEUED_SIMPLE_STRING= "+QUEUED\r\n";
     public static final String FULL_RESYNC= "+FULLRESYNC";
 
     public static final String EMPTY_BULK_STRING = "$0\r\n\r\n";

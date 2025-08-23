@@ -3,6 +3,7 @@ package requests.model;
 import requests.Request;
 
 import java.net.Socket;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,7 +23,11 @@ public class Client {
     }
 
     public List<Request> getQueuedRequests() {
-        return queuedRequests;
+        return Collections.unmodifiableList(queuedRequests);
+    }
+
+    public void queueRequest(Request request) {
+        this.queuedRequests.add(request);
     }
 
     public void startTransaction() {
@@ -34,6 +39,7 @@ public class Client {
             throw new UnsupportedOperationException("Can't end a transaction when not in one");
         }
         this.inTransaction = false;
+        this.queuedRequests.clear();
     }
 
     public boolean inTransaction() {

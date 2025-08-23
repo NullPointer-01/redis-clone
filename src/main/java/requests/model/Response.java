@@ -9,6 +9,10 @@ public class Response {
         this.response = response;
     }
 
+    public String getResponseAsStr() {
+        return response;
+    }
+
     public byte[] getResponse() {
         return response.getBytes(StandardCharsets.UTF_8);
     }
