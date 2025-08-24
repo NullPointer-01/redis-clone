@@ -1,4 +1,4 @@
-package requests.master;
+package requests.slave.strings;
 
 import repository.RepositoryManager;
 import repository.Storage;
@@ -11,10 +11,10 @@ import java.util.Optional;
 
 import static util.RespConstants.NULL_BULK_STRING;
 
-public class GetMasterRequest extends AbstractRequest {
+public class GetSlaveRequest extends AbstractRequest {
     private final String key;
 
-    public GetMasterRequest(String key) {
+    public GetSlaveRequest(String key) {
         super(Command.GET);
         this.key = key;
     }

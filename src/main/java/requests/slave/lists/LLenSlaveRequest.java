@@ -1,4 +1,4 @@
-package requests.master;
+package requests.slave.lists;
 
 import repository.RepositoryManager;
 import repository.Storage;
@@ -7,10 +7,10 @@ import requests.model.Command;
 import requests.model.Response;
 import util.RespSerializer;
 
-public class LLenMasterRequest extends AbstractRequest {
+public class LLenSlaveRequest extends AbstractRequest {
     private final String listKey;
 
-    public LLenMasterRequest(String listKey) {
+    public LLenSlaveRequest(String listKey) {
         super(Command.LLEN);
         this.listKey = listKey;
     }

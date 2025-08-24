@@ -1,4 +1,4 @@
-package requests.master;
+package requests.master.txn;
 
 import requests.AbstractRequest;
 import requests.Request;

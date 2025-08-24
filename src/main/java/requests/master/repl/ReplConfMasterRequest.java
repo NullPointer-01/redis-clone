@@ -1,4 +1,4 @@
-package requests.master;
+package requests.master.repl;
 
 import requests.AbstractRequest;
 import requests.model.Command;

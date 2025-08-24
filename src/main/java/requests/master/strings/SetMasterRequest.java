@@ -1,4 +1,4 @@
-package requests.master;
+package requests.master.strings;
 
 import conf.ConfigurationManager;
 import conf.MasterConfiguration;

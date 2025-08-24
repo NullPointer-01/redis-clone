@@ -1,4 +1,4 @@
-package requests.master;
+package requests.master.lists;
 
 import repository.RepositoryManager;
 import repository.Storage;

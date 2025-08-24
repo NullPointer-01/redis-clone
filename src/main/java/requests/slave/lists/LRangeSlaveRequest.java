@@ -1,4 +1,4 @@
-package requests.slave;
+package requests.slave.lists;
 
 import repository.RepositoryManager;
 import repository.Storage;

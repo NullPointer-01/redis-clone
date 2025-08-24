@@ -2,12 +2,23 @@ package util;
 
 import conf.Configuration;
 import requests.*;
-import requests.master.*;
+import requests.master.InfoMasterRequest;
+import requests.master.TypeMasterCommand;
+import requests.master.lists.*;
+import requests.master.repl.PSyncMasterRequest;
+import requests.master.repl.ReplConfMasterRequest;
+import requests.master.strings.DelMasterRequest;
+import requests.master.strings.GetMasterRequest;
+import requests.master.strings.IncrMasterRequest;
+import requests.master.strings.SetMasterRequest;
+import requests.master.txn.DiscardMasterRequest;
+import requests.master.txn.ExecMasterRequest;
+import requests.master.txn.MultiMasterRequest;
 import requests.model.Command;
-import requests.slave.GetSlaveRequest;
 import requests.slave.InfoSlaveRequest;
-import requests.slave.LLenSlaveRequest;
-import requests.slave.LRangeSlaveRequest;
+import requests.slave.lists.LLenSlaveRequest;
+import requests.slave.lists.LRangeSlaveRequest;
+import requests.slave.strings.GetSlaveRequest;
 
 import java.io.IOException;
 import java.io.InputStream;

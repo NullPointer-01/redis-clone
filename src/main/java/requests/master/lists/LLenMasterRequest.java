@@ -1,4 +1,4 @@
-package requests.master;
+package requests.master.lists;
 
 import repository.RepositoryManager;
 import repository.Storage;
@@ -7,22 +7,18 @@ import requests.model.Command;
 import requests.model.Response;
 import util.RespSerializer;
 
-import java.util.List;
-
-public class LPushMasterRequest extends AbstractRequest {
+public class LLenMasterRequest extends AbstractRequest {
     private final String listKey;
-    private final List<String> elements;
 
-    public LPushMasterRequest(String listKey, List<String> elements) {
-        super(Command.LPUSH);
+    public LLenMasterRequest(String listKey) {
+        super(Command.LLEN);
         this.listKey = listKey;
-        this.elements = elements;
     }
 
     @Override
     public Response doExecute() {
         Storage<String, String> storage = RepositoryManager.getInstance();
-        Integer length = storage.lPush(listKey, elements);
+        Integer length = storage.lLen(listKey);
 
         return new Response(RespSerializer.asInteger(length));
     }

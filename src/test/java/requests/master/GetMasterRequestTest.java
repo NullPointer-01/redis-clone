@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import repository.RepositoryManager;
 import repository.Storage;
+import requests.master.strings.GetMasterRequest;
 import requests.model.Response;
 
 import java.util.List;
