@@ -25,6 +25,7 @@ public enum Command {
     DISCARD("DISCARD"),
 
     COMMAND("COMMAND"),
+    TYPE("TYPE"),
     INVALID("");
 
     private final String name;

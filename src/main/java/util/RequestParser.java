@@ -102,6 +102,9 @@ public class RequestParser {
             case DISCARD:
                 requests.add(new DiscardMasterRequest());
                 break;
+            case TYPE:
+                requests.add(new TypeMasterCommand(items.get(1)));
+                break;
             default:
                 requests.add(new InvalidRequest(items));
         }
