@@ -17,6 +17,7 @@ public class RespConstants {
 
     public static final String TYPE_NONE_SIMPLE_STRING= "+none\r\n";
     public static final String TYPE_STRING_SIMPLE_STRING= "+string\r\n";
+    public static final String TYPE_STREAM_SIMPLE_STRING= "+stream\r\n";
 
     public static final String EMPTY_BULK_STRING = "$0\r\n\r\n";
     public static final String NULL_BULK_STRING = "$-1\r\n";

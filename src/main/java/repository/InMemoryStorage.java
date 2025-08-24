@@ -131,4 +131,13 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
 
         return List.of();
     }
+
+    @Override
+    public Optional<Stream<K, V>> getStream(K key) {
+        if (streamsMap.containsKey(key)) {
+            return Optional.of(streamsMap.get(key));
+        }
+
+        return Optional.empty();
+    }
 }

@@ -1,5 +1,6 @@
 package requests.master;
 
+import ds.Stream;
 import repository.RepositoryManager;
 import repository.Storage;
 import requests.AbstractRequest;
@@ -8,8 +9,7 @@ import requests.model.Response;
 
 import java.util.Optional;
 
-import static util.RespConstants.TYPE_NONE_SIMPLE_STRING;
-import static util.RespConstants.TYPE_STRING_SIMPLE_STRING;
+import static util.RespConstants.*;
 
 public class TypeMasterCommand extends AbstractRequest {
     private final String key;
@@ -24,10 +24,15 @@ public class TypeMasterCommand extends AbstractRequest {
         Storage<String, String> storage = RepositoryManager.getInstance();
 
         Optional<String> valueOpt = storage.get(key);
-        if (valueOpt.isEmpty()) {
-            return new Response(TYPE_NONE_SIMPLE_STRING);
+        if (valueOpt.isPresent()) {
+            return new Response(TYPE_STRING_SIMPLE_STRING);
         }
 
-        return new Response(TYPE_STRING_SIMPLE_STRING);
+        Optional<Stream<String, String>> streamOpt = storage.getStream(key);
+        if (streamOpt.isPresent()) {
+            return new Response(TYPE_STREAM_SIMPLE_STRING);
+        }
+
+        return new Response(TYPE_NONE_SIMPLE_STRING);
     }
 }
