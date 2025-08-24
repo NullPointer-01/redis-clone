@@ -3,18 +3,18 @@ package ds;
 import java.util.List;
 
 public class Entry<K, V> {
-    private final int millis;
+    private final long millis;
     private final int sequenceNumber;
 
     private final List<Pair<K, V>> keysAndValues;
 
-    public Entry(int millis, int sequenceNumber, List<Pair<K, V>> keysAndValues) {
+    public Entry(long millis, int sequenceNumber, List<Pair<K, V>> keysAndValues) {
         this.millis = millis;
         this.sequenceNumber = sequenceNumber;
         this.keysAndValues = keysAndValues;
     }
 
-    public int getMillis() {
+    public long getMillis() {
         return millis;
     }
 

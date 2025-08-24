@@ -1,15 +1,20 @@
 package repository;
 
+import ds.Pair;
+import ds.Stream;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryStorage<K, V> implements Storage<K, V> {
     private final Map<K, Map.Entry<Long,V>> valuesMap;
     private final Map<K, List<V>> listsMap;
+    public final Map<K, Stream<K, V>> streamsMap;
 
     public InMemoryStorage() {
         valuesMap = new ConcurrentHashMap<>();
         listsMap = new ConcurrentHashMap<>();
+        streamsMap = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -110,5 +115,20 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
         }
 
         return count;
+    }
+
+    @Override
+    public String xAdd(K streamKey, String entryId, List<Pair<K, V>> keysAndValues) {
+        Stream<K, V> stream = streamsMap.computeIfAbsent(streamKey, k -> new Stream<>());
+        stream.addEntry(entryId, keysAndValues);
+
+        return entryId;
+    }
+
+    @Override
+    public List<Pair<K, V>> xRange(K streamKey, String startEntryId, String endEntryId) {
+        streamsMap.get(streamKey);
+
+        return List.of();
     }
 }

@@ -3,11 +3,12 @@ package requests.model;
 public enum Command {
     PING("PING"),
     ECHO("ECHO"),
+    INFO("INFO"),
+    TYPE("TYPE"),
 
     SET("SET"),
     GET("GET"),
     DEL("DEL"),
-
     INCR("INCR"),
 
     RPUSH("RPUSH"),
@@ -16,7 +17,6 @@ public enum Command {
     LPOP("LPOP"),
     LRANGE("LRANGE"),
 
-    INFO("INFO"),
     REPLCONF("REPLCONF"),
     PSYNC("PSYNC"),
 
@@ -24,8 +24,9 @@ public enum Command {
     EXEC("EXEC"),
     DISCARD("DISCARD"),
 
+    XADD("XADD"),
+
     COMMAND("COMMAND"),
-    TYPE("TYPE"),
     INVALID("");
 
     private final String name;

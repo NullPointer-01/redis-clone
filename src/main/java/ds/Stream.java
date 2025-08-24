@@ -16,10 +16,10 @@ public class Stream<K, V> {
         String[] parts = entryId.split("-");
 
         trie.insert(entryId, entries.size());
-        entries.add(new Entry<>(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), keysAndValues));
+        entries.add(new Entry<>(Long.parseLong(parts[0]), Integer.parseInt(parts[1]), keysAndValues));
     }
 
-    public int getLastestMillis() {
+    public long getLastestMillis() {
         return entries.isEmpty() ? 0 : entries.get(entries.size()-1).getMillis();
     }
 

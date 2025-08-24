@@ -7,6 +7,7 @@ import requests.master.TypeMasterCommand;
 import requests.master.lists.*;
 import requests.master.repl.PSyncMasterRequest;
 import requests.master.repl.ReplConfMasterRequest;
+import requests.master.streams.XAddMasterRequest;
 import requests.master.strings.DelMasterRequest;
 import requests.master.strings.GetMasterRequest;
 import requests.master.strings.IncrMasterRequest;
@@ -115,6 +116,9 @@ public class RequestParser {
                 break;
             case TYPE:
                 requests.add(new TypeMasterCommand(items.get(1)));
+                break;
+            case XADD:
+                requests.add(new XAddMasterRequest(items.get(1), items.get(2), items.subList(3, items.size())));
                 break;
             default:
                 requests.add(new InvalidRequest(items));
