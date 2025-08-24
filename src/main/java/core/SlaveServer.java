@@ -55,11 +55,23 @@ public class SlaveServer extends Server {
 
         String masterHost = slaveConfiguration.getMasterHost();
         int masterPort = slaveConfiguration.getMasterPort();
+        int retryDelay = 1000;
+
+        while (true) {
+            try (Socket ignored = new Socket(masterHost, masterPort)) {
+                break;
+            } catch (IOException e) {
+                LOGGER.log(Level.INFO, "Port not open, retrying...");
+                try {
+                    Thread.sleep(retryDelay);
+                } catch (InterruptedException ignored) {
+                }
+            }
+        }
 
         try (Socket socket = new Socket(masterHost, masterPort)) {
 
             Client client = new Client(socket);
-
             initiateHandshake(client);
             receiveRequests(client);
 
