@@ -4,11 +4,11 @@ import java.util.List;
 
 public class Entry<K, V> {
     private final long millis;
-    private final int sequenceNumber;
+    private final long sequenceNumber;
 
     private final List<Pair<K, V>> keysAndValues;
 
-    public Entry(long millis, int sequenceNumber, List<Pair<K, V>> keysAndValues) {
+    public Entry(long millis, long sequenceNumber, List<Pair<K, V>> keysAndValues) {
         this.millis = millis;
         this.sequenceNumber = sequenceNumber;
         this.keysAndValues = keysAndValues;
@@ -18,7 +18,7 @@ public class Entry<K, V> {
         return millis;
     }
 
-    public int getSequenceNumber() {
+    public long getSequenceNumber() {
         return sequenceNumber;
     }
 

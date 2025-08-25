@@ -7,7 +7,7 @@ import exceptions.InvalidEntryIdException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static util.RespConstants.ZERO_STREAM_ENTRY_ID;
+import static constants.Constants.*;
 
 public class InMemoryStorage<K, V> implements Storage<K, V> {
     private final Map<K, Map.Entry<Long,V>> valuesMap;
@@ -126,9 +126,23 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
         long lastMillis = stream.getLastMillis();
         long lastSequenceNumber = stream.getLastSequenceNumber();
 
-        String[] parts = entryId.split("-");
-        long millis = Long.parseLong(parts[0]);
-        long sequenceNumber = Integer.parseInt(parts[1]);
+        long millis, sequenceNumber;
+        String[] parts = entryId.split(HYPHEN);
+
+        if (parts.length == 1 && ASTERISK.equals(parts[0])) { // Fully auto-generated Id
+            millis = System.currentTimeMillis();
+            sequenceNumber = millis == lastMillis ? lastSequenceNumber + 1 : 0;
+
+            entryId = millis + HYPHEN + sequenceNumber;
+        } else if (ASTERISK.equals(parts[1])) { // Partially auto-generated Id
+            millis = Long.parseLong(parts[0]);
+            sequenceNumber = millis == lastMillis ? lastSequenceNumber + 1 : 0;
+
+            entryId = millis + HYPHEN + sequenceNumber;
+        } else {
+            millis = Long.parseLong(parts[0]);
+            sequenceNumber = Long.parseLong(parts[1]);
+        }
 
         if (ZERO_STREAM_ENTRY_ID.equals(entryId)) {
             throw new InvalidEntryIdException("Invalid entry id", entryId, stream.getLastEntryId());

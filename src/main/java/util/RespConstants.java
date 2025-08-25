@@ -9,8 +9,6 @@ public class RespConstants {
     public static final Character CR = '\r';
     public static final Character LF = '\n';
 
-    public static final String ZERO_STREAM_ENTRY_ID = "0-0";
-
     public static final String CRLF = "\r\n";
     public static final String PONG_SIMPLE_STRING = "+PONG\r\n";
     public static final String OK_SIMPLE_STRING = "+OK\r\n";

@@ -1,6 +1,6 @@
 package exceptions;
 
-import static util.RespConstants.ZERO_STREAM_ENTRY_ID;
+import static constants.Constants.ZERO_STREAM_ENTRY_ID;
 
 public class InvalidEntryIdException extends RuntimeException {
     private final String lastEntryId;

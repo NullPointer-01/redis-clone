@@ -3,7 +3,8 @@ package ds;
 import java.util.LinkedList;
 import java.util.List;
 
-import static util.RespConstants.ZERO_STREAM_ENTRY_ID;
+import static constants.Constants.HYPHEN;
+import static constants.Constants.ZERO_STREAM_ENTRY_ID;
 
 public class Stream<K, V> {
     private final Trie trie;
@@ -15,17 +16,17 @@ public class Stream<K, V> {
     }
 
     public void addEntry(String entryId, List<Pair<K, V>> keysAndValues) {
-        String[] parts = entryId.split("-");
+        String[] parts = entryId.split(HYPHEN);
 
         trie.insert(entryId, entries.size());
-        entries.add(new Entry<>(Long.parseLong(parts[0]), Integer.parseInt(parts[1]), keysAndValues));
+        entries.add(new Entry<>(Long.parseLong(parts[0]), Long.parseLong(parts[1]), keysAndValues));
     }
 
     public long getLastMillis() {
         return entries.isEmpty() ? 0 : entries.get(entries.size()-1).getMillis();
     }
 
-    public int getLastSequenceNumber() {
+    public long getLastSequenceNumber() {
         return entries.isEmpty() ? 0 : entries.get(entries.size()-1).getSequenceNumber();
     }
 
