@@ -2,9 +2,12 @@ package repository;
 
 import ds.Pair;
 import ds.Stream;
+import exceptions.InvalidEntryIdException;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static util.RespConstants.ZERO_STREAM_ENTRY_ID;
 
 public class InMemoryStorage<K, V> implements Storage<K, V> {
     private final Map<K, Map.Entry<Long,V>> valuesMap;
@@ -120,8 +123,25 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
     @Override
     public String xAdd(K streamKey, String entryId, List<Pair<K, V>> keysAndValues) {
         Stream<K, V> stream = streamsMap.computeIfAbsent(streamKey, k -> new Stream<>());
-        stream.addEntry(entryId, keysAndValues);
+        long lastMillis = stream.getLastMillis();
+        long lastSequenceNumber = stream.getLastSequenceNumber();
 
+        String[] parts = entryId.split("-");
+        long millis = Long.parseLong(parts[0]);
+        long sequenceNumber = Integer.parseInt(parts[1]);
+
+        if (ZERO_STREAM_ENTRY_ID.equals(entryId)) {
+            throw new InvalidEntryIdException("Invalid entry id", entryId, stream.getLastEntryId());
+        }
+
+        if (lastMillis > millis) {
+            throw new InvalidEntryIdException("Invalid millis", entryId, stream.getLastEntryId());
+        }
+        if (lastMillis == millis && lastSequenceNumber >= sequenceNumber) {
+            throw new InvalidEntryIdException("Invalid sequence number", entryId, stream.getLastEntryId());
+        }
+
+        stream.addEntry(entryId, keysAndValues);
         return entryId;
     }
 

@@ -1,6 +1,7 @@
 package requests.master.streams;
 
 import ds.Pair;
+import exceptions.InvalidEntryIdException;
 import repository.RepositoryManager;
 import repository.Storage;
 import requests.AbstractRequest;
@@ -10,6 +11,9 @@ import util.RespSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static util.RespConstants.ERROR_INVALID_STREAM_ENTRY_ID;
+import static util.RespConstants.ERROR_ZERO_STREAM_ENTRY_ID;
 
 public class XAddMasterRequest extends AbstractRequest {
     private final String streamKey;
@@ -37,7 +41,15 @@ public class XAddMasterRequest extends AbstractRequest {
     public Response doExecute() {
         Storage<String, String> storage = RepositoryManager.getInstance();
 
-        String persistedEntryId = storage.xAdd(streamKey, entryId, keysAndValues);
-        return new Response(RespSerializer.asBulkString(persistedEntryId));
+        try {
+            String persistedEntryId = storage.xAdd(streamKey, entryId, keysAndValues);
+            return new Response(RespSerializer.asBulkString(persistedEntryId));
+        } catch (InvalidEntryIdException ex) {
+            if (ex.isZeroEntryId()) {
+                return new Response(ERROR_ZERO_STREAM_ENTRY_ID);
+            }
+            return new Response(ERROR_INVALID_STREAM_ENTRY_ID);
+        }
+
     }
 }
