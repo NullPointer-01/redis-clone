@@ -1,5 +1,6 @@
 package repository;
 
+import ds.Entry;
 import ds.Pair;
 import ds.Stream;
 
@@ -20,7 +21,7 @@ public interface Storage<K, V> {
     Integer delete(List<K> keys);
 
     String xAdd(K streamKey, String entryId, List<Pair<K, V>> keysAndValues);
-    List<Pair<K, V>> xRange(K streamKey, String startEntryId, String endEntryId);
+    List<Entry<K, V>> xRange(K streamKey, String startEntryId, String endEntryId);
 
     Optional<Stream<K, V>> getStream(K key);
 }

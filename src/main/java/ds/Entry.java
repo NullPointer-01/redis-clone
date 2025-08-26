@@ -2,16 +2,19 @@ package ds;
 
 import java.util.List;
 
+import static constants.Constants.HYPHEN;
+
 public class Entry<K, V> {
     private final long millis;
     private final long sequenceNumber;
 
     private final List<Pair<K, V>> keysAndValues;
 
-    public Entry(long millis, long sequenceNumber, List<Pair<K, V>> keysAndValues) {
-        this.millis = millis;
-        this.sequenceNumber = sequenceNumber;
+    public Entry(String entryId, List<Pair<K, V>> keysAndValues) {
         this.keysAndValues = keysAndValues;
+
+        this.millis = Long.parseLong(entryId.substring(0, 16));
+        this.sequenceNumber = Long.parseLong(entryId.substring(16, 32));
     }
 
     public long getMillis() {
@@ -20,6 +23,10 @@ public class Entry<K, V> {
 
     public long getSequenceNumber() {
         return sequenceNumber;
+    }
+
+    public String getEntryId() {
+        return millis + HYPHEN + sequenceNumber;
     }
 
     public List<Pair<K, V>> getKeysAndValues() {

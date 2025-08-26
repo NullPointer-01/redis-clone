@@ -3,7 +3,6 @@ package ds;
 import java.util.LinkedList;
 import java.util.List;
 
-import static constants.Constants.HYPHEN;
 import static constants.Constants.ZERO_STREAM_ENTRY_ID;
 
 public class Stream<K, V> {
@@ -16,10 +15,8 @@ public class Stream<K, V> {
     }
 
     public void addEntry(String entryId, List<Pair<K, V>> keysAndValues) {
-        String[] parts = entryId.split(HYPHEN);
-
         trie.insert(entryId, entries.size());
-        entries.add(new Entry<>(Long.parseLong(parts[0]), Long.parseLong(parts[1]), keysAndValues));
+        entries.add(new Entry<>(entryId, keysAndValues));
     }
 
     public long getLastMillis() {
@@ -35,5 +32,19 @@ public class Stream<K, V> {
 
         Entry<K, V> lastEntry = entries.get(entries.size()-1);
         return String.valueOf(lastEntry.getMillis()) + '-' + lastEntry.getSequenceNumber();
+    }
+
+    public int findIndex(String entryId) {
+        Integer value = trie.search(entryId);
+        return value == null ? -1 : value;
+    }
+
+    public int findCeil(String entryId) {
+        Integer value = trie.searchCeil(entryId);
+        return value == null ? entries.size() : value;
+    }
+
+    public List<Entry<K, V>> getRange(int startIdx, int endIdx) {
+        return entries.subList(startIdx, endIdx+1); // End index is exclusive
     }
 }

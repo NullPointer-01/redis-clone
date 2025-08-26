@@ -50,6 +50,5 @@ public class XAddMasterRequest extends AbstractRequest {
             }
             return new Response(ERROR_INVALID_STREAM_ENTRY_ID);
         }
-
     }
 }

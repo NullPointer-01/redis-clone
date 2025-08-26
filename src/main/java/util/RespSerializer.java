@@ -1,6 +1,10 @@
 package util;
 
+import ds.Entry;
+import ds.Pair;
+
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import static util.RespConstants.*;
@@ -32,6 +36,29 @@ public class RespSerializer {
         for (String ele : elements) {
             sb.append(asBulkString(ele));
         }
+        return sb.toString();
+    }
+
+    public static String asArrayOfArrays(List<Entry<String, String>> entries) {
+        int innerArraySize = 2;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(ASTERISK).append(entries.size()).append(CRLF);
+
+        for (Entry<String, String> entry : entries) {
+            sb.append(ASTERISK).append(innerArraySize).append(CRLF);
+            sb.append(asBulkString(entry.getEntryId()));
+
+            List<Pair<String, String>> keysAndValues = entry.getKeysAndValues();
+            List<String> flatList = new ArrayList<>(keysAndValues.size() * 2);
+
+            for (Pair<String, String> pair : keysAndValues) {
+                flatList.add(pair.getKey());
+                flatList.add(pair.getValue());
+            }
+            sb.append(asArray(flatList));
+        }
+
         return sb.toString();
     }
 }

@@ -1,5 +1,6 @@
 package repository;
 
+import ds.Entry;
 import ds.Pair;
 import ds.Stream;
 import exceptions.InvalidEntryIdException;
@@ -147,7 +148,6 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
         if (ZERO_STREAM_ENTRY_ID.equals(entryId)) {
             throw new InvalidEntryIdException("Invalid entry id", entryId, stream.getLastEntryId());
         }
-
         if (lastMillis > millis) {
             throw new InvalidEntryIdException("Invalid millis", entryId, stream.getLastEntryId());
         }
@@ -155,15 +155,29 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
             throw new InvalidEntryIdException("Invalid sequence number", entryId, stream.getLastEntryId());
         }
 
-        stream.addEntry(entryId, keysAndValues);
+        stream.addEntry(getPaddedEntryId(entryId), keysAndValues);
         return entryId;
     }
 
     @Override
-    public List<Pair<K, V>> xRange(K streamKey, String startEntryId, String endEntryId) {
-        streamsMap.get(streamKey);
+    public List<Entry<K, V>> xRange(K streamKey, String startEntryId, String endEntryId) {
+        startEntryId = getPaddedEntryId(startEntryId);
+        endEntryId = getPaddedEntryId(endEntryId);
 
-        return List.of();
+        Stream<K, V> stream = streamsMap.get(streamKey);
+
+        int startIdx = stream.findIndex(startEntryId);
+        if (startIdx == -1) {
+            startIdx = stream.findCeil(startEntryId);
+        }
+
+        int endIdx = stream.findIndex(endEntryId);
+        if (endIdx == -1) {
+            endIdx = stream.findCeil(endEntryId);
+            endIdx--;
+        }
+
+        return stream.getRange(startIdx, endIdx);
     }
 
     @Override
@@ -173,5 +187,14 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
         }
 
         return Optional.empty();
+    }
+
+    private static String getPaddedEntryId(String entryId) {
+        String[] parts = entryId.split(HYPHEN);
+
+        String paddedMillis = String.format("%16s", parts[0]).replace(' ', '0');
+        String paddedSequenceNumber = String.format("%16s", parts[1]).replace(' ', '0');
+
+        return paddedMillis + paddedSequenceNumber;
     }
 }
