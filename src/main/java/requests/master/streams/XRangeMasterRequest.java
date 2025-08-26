@@ -11,8 +11,8 @@ import util.RespSerializer;
 
 import java.util.List;
 
-import static util.RespConstants.ERROR_INVALID_STREAM_ENTRY_ID;
-import static util.RespConstants.ERROR_ZERO_STREAM_ENTRY_ID;
+import static constants.ErrorConstants.ERROR_INVALID_STREAM_ENTRY_ID;
+import static constants.ErrorConstants.ERROR_ZERO_STREAM_ENTRY_ID;
 
 public class XRangeMasterRequest extends AbstractRequest  {
     private final String streamKey;

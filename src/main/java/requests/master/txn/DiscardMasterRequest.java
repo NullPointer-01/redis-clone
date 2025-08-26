@@ -8,7 +8,7 @@ import requests.model.Response;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static util.RespConstants.ERROR_DISCARD_WITHOUT_MULTI;
+import static constants.ErrorConstants.ERROR_DISCARD_WITHOUT_MULTI;
 import static util.RespConstants.OK_SIMPLE_STRING;
 
 public class DiscardMasterRequest implements Request {

@@ -9,7 +9,7 @@ import util.RespSerializer;
 
 import java.util.Optional;
 
-import static util.RespConstants.ERROR_NOT_AN_INTEGER;
+import static constants.ErrorConstants.ERROR_NOT_AN_INTEGER;
 
 public class IncrMasterRequest extends AbstractRequest {
     private final String key;

@@ -1,5 +1,6 @@
 package requests.master.txn;
 
+import constants.ErrorConstants;
 import requests.AbstractRequest;
 import requests.Request;
 import requests.model.Client;
@@ -11,7 +12,8 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static util.RespConstants.*;
+import static util.RespConstants.ASTERISK;
+import static util.RespConstants.CRLF;
 
 public class ExecMasterRequest implements Request {
     public ExecMasterRequest() {
@@ -25,7 +27,7 @@ public class ExecMasterRequest implements Request {
     @Override
     public void execute(Client client) throws IOException {
         if (!client.inTransaction()) {
-            Response response = new Response(ERROR_EXEC_WITHOUT_MULTI);
+            Response response = new Response(ErrorConstants.ERROR_EXEC_WITHOUT_MULTI);
 
             OutputStream outputStream = client.getSocket().getOutputStream();
             outputStream.write(response.getResponse());

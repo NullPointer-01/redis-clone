@@ -1,5 +1,6 @@
 package requests;
 
+import constants.ErrorConstants;
 import requests.model.Command;
 import requests.model.Response;
 import util.RespConstants;
@@ -22,6 +23,6 @@ public class InvalidRequest extends AbstractRequest {
         List<String> arguments = args.subList(1, args.size());
         String argsInStr = arguments.isEmpty() ? "" : arguments.stream().map(arg -> RespConstants.APOSTROPHE + arg + RespConstants.APOSTROPHE).collect(Collectors.joining(" "));
 
-        return new Response(String.format(RespConstants.ERROR_UNKNOWN_COMMAND, command, argsInStr));
+        return new Response(String.format(ErrorConstants.ERROR_UNKNOWN_COMMAND, command, argsInStr));
     }
 }
