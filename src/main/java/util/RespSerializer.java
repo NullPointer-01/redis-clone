@@ -6,6 +6,7 @@ import ds.Pair;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static util.RespConstants.*;
 
@@ -39,7 +40,7 @@ public class RespSerializer {
         return sb.toString();
     }
 
-    public static String asArrayOfArrays(List<Entry<String, String>> entries) {
+    public static String asXRangeArray(List<Entry<String, String>> entries) {
         int innerArraySize = 2;
 
         StringBuilder sb = new StringBuilder();
@@ -57,6 +58,38 @@ public class RespSerializer {
                 flatList.add(pair.getValue());
             }
             sb.append(asArray(flatList));
+        }
+
+        return sb.toString();
+    }
+
+    public static String asXReadArray(Map<String, List<Entry<String, String>>> entriesMap) {
+        int innerArraySize = 2;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(ASTERISK).append(entriesMap.size()).append(CRLF);
+
+        for (Map.Entry<String, List<Entry<String, String>>> mapEntry : entriesMap.entrySet()) {
+            sb.append(ASTERISK).append(innerArraySize).append(CRLF);
+            sb.append(asBulkString(mapEntry.getKey()));
+
+            List<Entry<String, String>> entriesList = mapEntry.getValue();
+            sb.append(ASTERISK).append(entriesList.size()).append(CRLF);
+
+            for (Entry<String, String> entry : entriesList) {
+                sb.append(ASTERISK).append(innerArraySize).append(CRLF);
+                sb.append(asBulkString(entry.getEntryId()));
+
+                List<Pair<String, String>> keysAndValues = entry.getKeysAndValues();
+                List<String> flatList = new ArrayList<>(keysAndValues.size() * 2);
+
+                for (Pair<String, String> pair : keysAndValues) {
+                    flatList.add(pair.getKey());
+                    flatList.add(pair.getValue());
+                }
+
+                sb.append(asArray(flatList));
+            }
         }
 
         return sb.toString();

@@ -44,6 +44,10 @@ public class Stream<K, V> {
         return value == null ? entries.size() : value;
     }
 
+    public int size() {
+        return entries.size();
+    }
+
     public List<Entry<K, V>> getRange(int startIdx, int endIdx) {
         return entries.subList(startIdx, endIdx+1); // End index is exclusive
     }

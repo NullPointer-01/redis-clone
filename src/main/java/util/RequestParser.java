@@ -9,6 +9,7 @@ import requests.master.repl.PSyncMasterRequest;
 import requests.master.repl.ReplConfMasterRequest;
 import requests.master.streams.XAddMasterRequest;
 import requests.master.streams.XRangeMasterRequest;
+import requests.master.streams.XReadMasterRequest;
 import requests.master.strings.DelMasterRequest;
 import requests.master.strings.GetMasterRequest;
 import requests.master.strings.IncrMasterRequest;
@@ -123,6 +124,9 @@ public class RequestParser {
                 break;
             case XRANGE:
                 requests.add(new XRangeMasterRequest(items.get(1), items.get(2), items.get(3)));
+                break;
+            case XREAD:
+                requests.add(new XReadMasterRequest(items.subList(2, items.size())));
                 break;
             default:
                 requests.add(new InvalidRequest(items));

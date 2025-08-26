@@ -32,7 +32,7 @@ public class XRangeMasterRequest extends AbstractRequest  {
 
         try {
             List<Entry<String, String>> entries = storage.xRange(streamKey, startEntryId, endEntryId);
-            return new Response(RespSerializer.asArrayOfArrays(entries));
+            return new Response(RespSerializer.asXRangeArray(entries));
         } catch (InvalidEntryIdException ex) {
             if (ex.isZeroEntryId()) {
                 return new Response(ERROR_ZERO_STREAM_ENTRY_ID);

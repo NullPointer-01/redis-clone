@@ -26,6 +26,7 @@ public enum Command {
 
     XADD("XADD"),
     XRANGE("XRANGE"),
+    XREAD("XREAD"),
 
     COMMAND("COMMAND"),
     INVALID("");

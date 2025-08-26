@@ -169,6 +169,31 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
     }
 
     @Override
+    public Map<K, List<Entry<K, V>>> xRead(List<Pair<K, String>> streamKeysAndEntryIds) {
+        Map<K, List<Entry<K, V>>> map = new LinkedHashMap<>();
+
+        for (Pair<K, String> pair : streamKeysAndEntryIds) {
+            K streamKey = pair.getKey();
+            Stream<K, V> stream = streamsMap.get(streamKey);
+
+            String startEntryId = pair.getValue();
+            startEntryId = getPaddedEntryId(processStartEntry(startEntryId));
+
+            int startIdx = stream.findIndex(startEntryId);
+            if (startIdx == -1) {
+                startIdx = stream.findCeil(startEntryId);
+            } else {
+                startIdx++;
+            }
+
+            List<Entry<K, V>> entries = stream.getRange(startIdx, stream.size()-1);
+            map.put(streamKey, entries);
+        }
+
+        return map;
+    }
+
+    @Override
     public Optional<Stream<K, V>> getStream(K key) {
         if (streamsMap.containsKey(key)) {
             return Optional.of(streamsMap.get(key));

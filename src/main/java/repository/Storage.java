@@ -5,6 +5,7 @@ import ds.Pair;
 import ds.Stream;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface Storage<K, V> {
@@ -24,4 +25,6 @@ public interface Storage<K, V> {
     List<Entry<K, V>> xRange(K streamKey, String startEntryId, String endEntryId);
 
     Optional<Stream<K, V>> getStream(K key);
+
+    Map<K, List<Entry<K, V>>> xRead(List<Pair<K, String>> streamKeysAndEntryIds);
 }
