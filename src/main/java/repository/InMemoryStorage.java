@@ -124,26 +124,11 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
     @Override
     public String xAdd(K streamKey, String entryId, List<Pair<K, V>> keysAndValues) {
         Stream<K, V> stream = streamsMap.computeIfAbsent(streamKey, k -> new Stream<>());
-        long lastMillis = stream.getLastMillis();
-        long lastSequenceNumber = stream.getLastSequenceNumber();
+        entryId = autoGenerateEntryId(entryId, stream);
 
-        long millis, sequenceNumber;
         String[] parts = entryId.split(HYPHEN);
-
-        if (parts.length == 1 && ASTERISK.equals(parts[0])) { // Fully auto-generated Id
-            millis = System.currentTimeMillis();
-            sequenceNumber = millis == lastMillis ? lastSequenceNumber + 1 : 0;
-
-            entryId = millis + HYPHEN + sequenceNumber;
-        } else if (ASTERISK.equals(parts[1])) { // Partially auto-generated Id
-            millis = Long.parseLong(parts[0]);
-            sequenceNumber = millis == lastMillis ? lastSequenceNumber + 1 : 0;
-
-            entryId = millis + HYPHEN + sequenceNumber;
-        } else {
-            millis = Long.parseLong(parts[0]);
-            sequenceNumber = Long.parseLong(parts[1]);
-        }
+        long millis = Long.parseLong(parts[0]), lastMillis = stream.getLastMillis();
+        long sequenceNumber = Long.parseLong(parts[1]), lastSequenceNumber = stream.getLastSequenceNumber();
 
         if (ZERO_STREAM_ENTRY_ID.equals(entryId)) {
             throw new InvalidEntryIdException("Invalid entry id", entryId, stream.getLastEntryId());
@@ -196,5 +181,26 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
         String paddedSequenceNumber = String.format("%16s", parts[1]).replace(' ', '0');
 
         return paddedMillis + paddedSequenceNumber;
+    }
+
+    private static <K,V> String autoGenerateEntryId(String entryId, Stream<K, V> stream) {
+        long lastMillis = stream.getLastMillis();
+        long lastSequenceNumber = stream.getLastSequenceNumber();
+
+        long millis, sequenceNumber;
+        String[] parts = entryId.split(HYPHEN);
+
+        if (parts.length == 1 && ASTERISK.equals(parts[0])) { // Fully auto-generated Id
+            millis = System.currentTimeMillis();
+            sequenceNumber = millis == lastMillis ? lastSequenceNumber + 1 : 0;
+        } else if (ASTERISK.equals(parts[1])) { // Partially auto-generated Id
+            millis = Long.parseLong(parts[0]);
+            sequenceNumber = millis == lastMillis ? lastSequenceNumber + 1 : 0;
+        } else {
+            millis = Long.parseLong(parts[0]);
+            sequenceNumber = Long.parseLong(parts[1]);
+        }
+
+        return millis + HYPHEN + sequenceNumber;
     }
 }
