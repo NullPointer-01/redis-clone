@@ -146,10 +146,13 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
 
     @Override
     public List<Entry<K, V>> xRange(K streamKey, String startEntryId, String endEntryId) {
+        Stream<K, V> stream = streamsMap.get(streamKey);
+
+        startEntryId = processStartEntry(startEntryId);
+        endEntryId = processEndEntry(endEntryId, stream);
+
         startEntryId = getPaddedEntryId(startEntryId);
         endEntryId = getPaddedEntryId(endEntryId);
-
-        Stream<K, V> stream = streamsMap.get(streamKey);
 
         int startIdx = stream.findIndex(startEntryId);
         if (startIdx == -1) {
@@ -202,5 +205,29 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
         }
 
         return millis + HYPHEN + sequenceNumber;
+    }
+
+    private String processStartEntry(String entryId) {
+        String[] parts = entryId.split(HYPHEN);
+
+        if (parts.length == 0 && HYPHEN.equals(entryId)) {
+            return ZERO_STREAM_ENTRY_ID;
+        } else if (parts.length == 1) {
+            return entryId + HYPHEN + ZERO;
+        }
+
+        return entryId;
+    }
+
+    private String processEndEntry(String entryId, Stream<K, V> stream) {
+        String[] parts = entryId.split(HYPHEN);
+
+        if (parts.length == 1 && PLUS.equals(parts[0])) {
+            return stream.getLastEntryId();
+        } else if (parts.length == 1) {
+            return entryId + HYPHEN + MAX_LONG_VALUE;
+        }
+
+        return entryId;
     }
 }
