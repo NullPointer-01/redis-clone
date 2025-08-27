@@ -9,6 +9,4 @@ public interface Request {
     Command getCommand();
 
     void execute(Client client) throws IOException;
-
-    default void postExecute(Client client) {}
 }

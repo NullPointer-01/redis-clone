@@ -45,4 +45,6 @@ public abstract class AbstractRequest implements Request {
     }
 
     public abstract Response doExecute();
+
+    public void postExecute(Client client) {}
 }
