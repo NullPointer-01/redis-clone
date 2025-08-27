@@ -26,7 +26,9 @@ public class RequestHandler extends Thread {
 
     @Override
     public void run() {
-        try (Socket socket = client.getSocket(); BufferedInputStream bis = new BufferedInputStream(socket.getInputStream())) {
+        try (Socket socket = client.getSocket()) {
+            BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+
             while (socket.isConnected()) {
                 List<Request> requests = RequestParser.parseRequests(bis, conf);
 

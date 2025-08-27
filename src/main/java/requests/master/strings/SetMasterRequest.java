@@ -1,14 +1,12 @@
 package requests.master.strings;
 
-import conf.ConfigurationManager;
-import conf.MasterConfiguration;
 import repository.RepositoryManager;
 import repository.Storage;
 import requests.AbstractRequest;
 import requests.model.Client;
 import requests.model.Command;
 import requests.model.Response;
-import service.PropagationHandler;
+import service.MasterReplicationHandler;
 import util.RespSerializer;
 
 import java.nio.charset.StandardCharsets;
@@ -38,8 +36,6 @@ public class SetMasterRequest extends AbstractRequest {
 
     @Override
     public void postExecute(Client ignored) {
-        MasterConfiguration masterConfiguration = (MasterConfiguration) ConfigurationManager.getInstance().getConfiguration();
-
         List<String> requestParts;
         if (timeToExpireInMillis == null) {
             requestParts = List.of(command.getName(), key, value);
@@ -48,6 +44,6 @@ public class SetMasterRequest extends AbstractRequest {
         }
 
         byte[] request = RespSerializer.asArray(requestParts).getBytes(StandardCharsets.UTF_8);
-        new PropagationHandler(request, masterConfiguration.getReplicas()).propagateRequests();
+        MasterReplicationHandler.getInstance().propagateRequests(request);
     }
 }

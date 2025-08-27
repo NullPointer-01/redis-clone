@@ -7,6 +7,7 @@ import requests.AbstractRequest;
 import requests.model.Client;
 import requests.model.Command;
 import requests.model.Response;
+import service.MasterReplicationHandler;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -47,11 +48,14 @@ public class PSyncMasterRequest extends AbstractRequest {
             System.arraycopy(header, 0, data, 0, header.length);
             System.arraycopy(emptyFileBytes, 0, data,  header.length, emptyFileBytes.length);
 
-            configuration.addReplica(new Replica(client));
-
             OutputStream outputStream = client.getSocket().getOutputStream();
             outputStream.write(data);
             outputStream.flush();
+
+            configuration.addReplica(new Replica(client));
+
+            MasterReplicationHandler handler = MasterReplicationHandler.getInstance();
+            if (!handler.isRunning()) handler.start();
 
         }   catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Exception getting rdb file " + e);

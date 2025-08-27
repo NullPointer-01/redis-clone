@@ -194,8 +194,7 @@ public class RequestParser {
 
     public static void parseRdbFile(InputStream is, Configuration conf) throws IOException {
         while (is.available() > 0) {
-            char c = (char) is.read();
-            System.out.print(c);
+            char ignored = (char) is.read();
         }
     }
 }
