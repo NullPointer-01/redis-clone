@@ -41,7 +41,11 @@ public class PSyncMasterRequest extends AbstractRequest {
 
             String emptyFileBase64 = br.readLine();
             byte[] emptyFileBytes = Base64.getDecoder().decode(emptyFileBase64);
-            byte[] data = (DOLLAR + emptyFileBytes.length + CRLF).getBytes(StandardCharsets.UTF_8);
+            byte[] header = (DOLLAR + emptyFileBytes.length + CRLF).getBytes(StandardCharsets.UTF_8);
+
+            byte[] data = new byte[header.length + emptyFileBytes.length];
+            System.arraycopy(header, 0, data, 0, header.length);
+            System.arraycopy(emptyFileBytes, 0, data,  header.length, emptyFileBytes.length);
 
             configuration.addReplica(new Replica(client));
 

@@ -72,20 +72,29 @@ public class SlaveServer extends Server {
         try (Socket socket = new Socket(masterHost, masterPort)) {
 
             Client client = new Client(socket);
-            initiateHandshake(client);
-            receiveRequests(client);
 
+            initiateHandshake(client);
+            receiveRdbFile(client);
+            receiveRequests(client);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private void receiveRdbFile(Client client) throws IOException {
+        Socket socket = client.getSocket();
+        BufferedInputStream is = new BufferedInputStream(socket.getInputStream());
+
+        RequestParser.parseRdbFile(is, conf);
+    }
+
     private void receiveRequests(Client client) throws IOException {
         Socket socket = client.getSocket();
-        BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+        BufferedInputStream is = new BufferedInputStream(socket.getInputStream());
+        System.out.println("Waiting for requests from master");
 
         while (socket.isConnected()) {
-            List<Request> requests = RequestParser.parseRequests(bis, conf);
+            List<Request> requests = RequestParser.parseReplicationRequests(is);
             for (Request request : requests) {
                 request.execute(client);
             }
@@ -153,5 +162,7 @@ public class SlaveServer extends Server {
         if (!matcher.matches()) {
             throw new IOException("Handshake with master failed, expected proper response for PSYNC");
         }
+
+        System.out.println("Handshake completed");
     }
 }

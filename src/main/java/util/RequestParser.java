@@ -23,6 +23,7 @@ import requests.slave.lists.LLenSlaveRequest;
 import requests.slave.lists.LRangeSlaveRequest;
 import requests.slave.strings.GetSlaveRequest;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -137,15 +138,14 @@ public class RequestParser {
         Command command = Command.getCommandByName(items.get(0).toUpperCase());
 
         switch (command) {
+            case COMMAND:
+                requests.add(new CommandRequest());
+                break;
             case PING:
                 requests.add(new PingRequest());
                 break;
             case ECHO:
                 requests.add(new EchoRequest(items.get(1)));
-                break;
-            case SET:
-                Long timeToExpireInMillis = items.size() == 3 ? null : Long.parseLong(items.get(4));
-                requests.add(new SetMasterRequest(items.get(1), items.get(2), timeToExpireInMillis));
                 break;
             case GET:
                 requests.add(new GetSlaveRequest(items.get(1)));
@@ -160,7 +160,37 @@ public class RequestParser {
                 requests.add(new InfoSlaveRequest());
                 break;
             default:
-                throw new IOException("Invalid command " + command);
+                requests.add(new InvalidRequest(items));
+        }
+    }
+
+    public static List<Request> parseReplicationRequests(BufferedInputStream is) throws IOException {
+        List<Request> requests = new ArrayList<>();
+
+        while (is.available() > 0) {
+            char c = (char) is.read();
+            if (c != ASTERISK) {
+                continue;
+            }
+
+            List<Object> itemsTmp = RespDeserializer.parseArray(is);
+            List<String> items = itemsTmp.stream().map(i -> (String) i).toList();
+
+            Command command = Command.getCommandByName(items.get(0).toUpperCase());
+
+            switch (command) {
+                default:
+                    throw new IOException("Invalid command " + command);
+            }
+        }
+
+        return requests;
+    }
+
+    public static void parseRdbFile(InputStream is, Configuration conf) throws IOException {
+        while (is.available() > 0) {
+            char c = (char) is.read();
+            System.out.print(c);
         }
     }
 }
