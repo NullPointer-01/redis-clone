@@ -21,6 +21,7 @@ import requests.model.Command;
 import requests.slave.InfoSlaveRequest;
 import requests.slave.lists.LLenSlaveRequest;
 import requests.slave.lists.LRangeSlaveRequest;
+import requests.slave.repl.SetSlaveRequest;
 import requests.slave.strings.GetSlaveRequest;
 
 import java.io.BufferedInputStream;
@@ -179,6 +180,10 @@ public class RequestParser {
             Command command = Command.getCommandByName(items.get(0).toUpperCase());
 
             switch (command) {
+                case SET:
+                    Long timeToExpireInMillis = items.size() == 3 ? null : Long.parseLong(items.get(4));
+                    requests.add(new SetSlaveRequest(items.get(1), items.get(2), timeToExpireInMillis));
+                    break;
                 default:
                     throw new IOException("Invalid command " + command);
             }
