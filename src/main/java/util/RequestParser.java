@@ -17,9 +17,7 @@ import requests.master.strings.SetMasterRequest;
 import requests.master.txn.DiscardMasterRequest;
 import requests.master.txn.ExecMasterRequest;
 import requests.master.txn.MultiMasterRequest;
-import requests.master.zsets.ZAddMasterRequest;
-import requests.master.zsets.ZRankMasterRequest;
-import requests.master.zsets.ZRemMasterRequest;
+import requests.master.zsets.*;
 import requests.model.Command;
 import requests.slave.InfoSlaveRequest;
 import requests.slave.lists.LLenSlaveRequest;
@@ -141,6 +139,12 @@ public class RequestParser {
                 break;
             case ZRANK:
                 requests.add(new ZRankMasterRequest(items.get(1), items.get(2)));
+                break;
+            case ZCARD:
+                requests.add(new ZCardMasterRequest(items.get(1)));
+                break;
+            case ZSCORE:
+                requests.add(new ZScoreMasterRequest(items.get(1), items.get(2)));
                 break;
             default:
                 requests.add(new InvalidRequest(items));

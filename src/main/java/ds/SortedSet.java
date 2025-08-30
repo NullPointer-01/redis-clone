@@ -42,4 +42,16 @@ public class SortedSet<T extends Comparable<? super T>> {
         }
         return skipList.rank(value, membersVsScores.get(value));
     }
+
+    public Integer zCard() {
+        return membersVsScores.size();
+    }
+
+    public Double zScore(T value) {
+        if (!membersVsScores.containsKey(value)) {
+            return null;
+        }
+
+        return membersVsScores.get(value);
+    }
 }

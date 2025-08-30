@@ -29,4 +29,6 @@ public interface Storage<K, V> {
     boolean zAdd(K zSetKey, V member, double score);
     boolean zRem(K zSetKey, V member);
     Integer zRank(K zSetKey, V member);
+    Integer zCard(K zSetKey);
+    Double zScore(K zSetKey, V member);
 }
