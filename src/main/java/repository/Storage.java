@@ -23,8 +23,10 @@ public interface Storage<K, V> {
 
     String xAdd(K streamKey, String entryId, List<Pair<K, V>> keysAndValues);
     List<Entry<K, V>> xRange(K streamKey, String startEntryId, String endEntryId);
-
+    Map<K, List<Entry<K, V>>> xRead(List<Pair<K, String>> streamKeysAndEntryIds);
     Optional<Stream<K, V>> getStream(K key);
 
-    Map<K, List<Entry<K, V>>> xRead(List<Pair<K, String>> streamKeysAndEntryIds);
+    boolean zAdd(K zSetKey, V member, double score);
+    boolean zRem(K zSetKey, V member);
+    Integer zRank(K zSetKey, V member);
 }

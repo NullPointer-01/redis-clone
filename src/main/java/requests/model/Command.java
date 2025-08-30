@@ -28,6 +28,10 @@ public enum Command {
     XRANGE("XRANGE"),
     XREAD("XREAD"),
 
+    ZADD("ZADD"),
+    ZREM("ZREM"),
+    ZRANK("ZRANK"),
+
     COMMAND("COMMAND"),
     INVALID("");
 

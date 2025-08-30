@@ -2,6 +2,7 @@ package repository;
 
 import ds.Entry;
 import ds.Pair;
+import ds.SortedSet;
 import ds.Stream;
 import exceptions.InvalidEntryIdException;
 
@@ -10,15 +11,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static constants.Constants.*;
 
-public class InMemoryStorage<K, V> implements Storage<K, V> {
+public class InMemoryStorage<K, V extends Comparable<? super V>> implements Storage<K, V> {
     private final Map<K, Map.Entry<Long,V>> valuesMap;
     private final Map<K, List<V>> listsMap;
     public final Map<K, Stream<K, V>> streamsMap;
+    public final Map<K, SortedSet<V>> sortedSetsMap;
 
     public InMemoryStorage() {
         valuesMap = new ConcurrentHashMap<>();
         listsMap = new ConcurrentHashMap<>();
         streamsMap = new ConcurrentHashMap<>();
+        sortedSetsMap = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -200,6 +203,32 @@ public class InMemoryStorage<K, V> implements Storage<K, V> {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public boolean zAdd(K zSetKey, V member, double score) {
+        sortedSetsMap.computeIfAbsent(zSetKey, k -> new SortedSet<>());
+        SortedSet<V> set = sortedSetsMap.get(zSetKey);
+
+        return set.zAdd(member, score);
+    }
+
+    @Override
+    public boolean zRem(K zSetKey, V member) {
+        if (!sortedSetsMap.containsKey(zSetKey)) {
+            return false;
+        }
+
+        return sortedSetsMap.get(zSetKey).zRem(member);
+    }
+
+    @Override
+    public Integer zRank(K zSetKey, V member) {
+        if (!sortedSetsMap.containsKey(zSetKey)) {
+            return 0;
+        }
+
+        return sortedSetsMap.get(zSetKey).zRank(member);
     }
 
     private static String getPaddedEntryId(String entryId) {
