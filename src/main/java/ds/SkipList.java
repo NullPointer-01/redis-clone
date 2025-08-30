@@ -1,5 +1,7 @@
 package ds;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -155,6 +157,31 @@ public class SkipList<T extends Comparable<? super T>> {
         }
 
         return 0;
+    }
+
+    public List<T> range(int startIdx, int endIdx) {
+        Node<T> curr = head;
+        int span = 0;
+
+        for (int i = nLevels - 1; i >= 0; i--) {
+            while (curr.forward[i] != null && span + curr.span[i] <= startIdx) {
+                span += curr.span[i];
+                curr = curr.forward[i];
+            }
+        }
+        curr = curr.forward[0];
+
+        int count = endIdx-startIdx+1;
+        List<T> elements = new ArrayList<>(count);
+
+        for (int i = 0; i < count; i++) {
+            if (curr == null) break;
+
+            elements.add(curr.value);
+            curr = curr.forward[0];
+        }
+
+        return elements;
     }
 
     public int size() {

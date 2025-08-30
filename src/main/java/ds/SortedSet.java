@@ -1,6 +1,8 @@
 package ds;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SortedSet<T extends Comparable<? super T>> {
@@ -53,5 +55,12 @@ public class SortedSet<T extends Comparable<? super T>> {
         }
 
         return membersVsScores.get(value);
+    }
+
+    public List<T> zRange(int startIdx, int endIdx) {
+        if (startIdx > zCard() || startIdx > endIdx) return Collections.emptyList();
+        endIdx = Math.min(endIdx, zCard());
+
+        return skipList.range(startIdx, endIdx);
     }
 }

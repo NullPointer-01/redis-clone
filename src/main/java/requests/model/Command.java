@@ -33,6 +33,7 @@ public enum Command {
     ZRANK("ZRANK"),
     ZCARD("ZCARD"),
     ZSCORE("ZSCORE"),
+    ZRANGE("ZRANGE"),
 
     COMMAND("COMMAND"),
     INVALID("");

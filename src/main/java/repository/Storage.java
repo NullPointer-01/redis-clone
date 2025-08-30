@@ -31,4 +31,5 @@ public interface Storage<K, V> {
     Integer zRank(K zSetKey, V member);
     Integer zCard(K zSetKey);
     Double zScore(K zSetKey, V member);
+    List<V> zRange(K zSetKey, int startIdx, int endIdx);
 }

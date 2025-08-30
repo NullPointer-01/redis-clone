@@ -146,6 +146,9 @@ public class RequestParser {
             case ZSCORE:
                 requests.add(new ZScoreMasterRequest(items.get(1), items.get(2)));
                 break;
+            case ZRANGE:
+                requests.add(new ZRangeMasterRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
+                break;
             default:
                 requests.add(new InvalidRequest(items));
         }

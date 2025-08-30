@@ -249,6 +249,15 @@ public class InMemoryStorage<K, V extends Comparable<? super V>> implements Stor
         return sortedSetsMap.get(zSetKey).zScore(member);
     }
 
+    @Override
+    public List<V> zRange(K zSetKey, int startIdx, int endIdx) {
+        if (!sortedSetsMap.containsKey(zSetKey)) {
+            return Collections.emptyList();
+        }
+
+        return sortedSetsMap.get(zSetKey).zRange(startIdx, endIdx);
+    }
+
     private static String getPaddedEntryId(String entryId) {
         String[] parts = entryId.split(HYPHEN);
 
