@@ -21,10 +21,10 @@ import requests.model.Command;
 import requests.slave.InfoSlaveRequest;
 import requests.slave.lists.LLenSlaveRequest;
 import requests.slave.lists.LRangeSlaveRequest;
+import requests.slave.repl.ReplConfSlaveRequest;
 import requests.slave.repl.SetSlaveRequest;
 import requests.slave.strings.GetSlaveRequest;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -165,7 +165,7 @@ public class RequestParser {
         }
     }
 
-    public static List<Request> parseReplicationRequests(BufferedInputStream is) throws IOException {
+    public static List<Request> parseReplicationRequests(InputStream is) throws IOException {
         List<Request> requests = new ArrayList<>();
 
         while (is.available() > 0) {
@@ -180,6 +180,9 @@ public class RequestParser {
             Command command = Command.getCommandByName(items.get(0).toUpperCase());
 
             switch (command) {
+                case REPLCONF:
+                    requests.add(new ReplConfSlaveRequest());
+                    break;
                 case SET:
                     Long timeToExpireInMillis = items.size() == 3 ? null : Long.parseLong(items.get(4));
                     requests.add(new SetSlaveRequest(items.get(1), items.get(2), timeToExpireInMillis));
