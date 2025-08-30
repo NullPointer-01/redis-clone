@@ -5,6 +5,7 @@ import requests.*;
 import requests.master.InfoMasterRequest;
 import requests.master.TypeMasterCommand;
 import requests.master.lists.*;
+import requests.master.pubsub.SubscribeRequest;
 import requests.master.repl.PSyncMasterRequest;
 import requests.master.repl.ReplConfMasterRequest;
 import requests.master.streams.XAddMasterRequest;
@@ -148,6 +149,9 @@ public class RequestParser {
                 break;
             case ZRANGE:
                 requests.add(new ZRangeMasterRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
+                break;
+            case SUBSCRIBE:
+                requests.add(new SubscribeRequest(items.get(1)));
                 break;
             default:
                 requests.add(new InvalidRequest(items));

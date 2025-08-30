@@ -35,6 +35,8 @@ public enum Command {
     ZSCORE("ZSCORE"),
     ZRANGE("ZRANGE"),
 
+    SUBSCRIBE("SUBSCRIBE"),
+
     COMMAND("COMMAND"),
     INVALID("");
 
