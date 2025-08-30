@@ -60,6 +60,39 @@ public class RequestParser {
         return requests;
     }
 
+    public static List<Request> parseSubscriberRequests(InputStream is) throws IOException {
+        List<Request> requests = new ArrayList<>();
+
+        while (is.available() > 0) {
+            char c = (char) is.read();
+            if (c != ASTERISK) {
+                throw new IOException("Invalid byte, expected array " + c);
+            }
+
+            List<Object> itemsTmp = RespDeserializer.parseArray(is);
+            List<String> items = itemsTmp.stream().map(i -> (String) i).toList();
+
+            Command command = Command.getCommandByName(items.get(0).toUpperCase());
+
+            switch (command) {
+                case SUBSCRIBE:
+                    requests.add(new SubscribeRequest(items.get(1)));
+                    break;
+                case UNSUBSCRIBE:
+                case PSUBSCRIBE:
+                case PUNSUBSCRIBE:
+                case QUIT:
+                case PING:
+                    requests.add(new PingRequest());
+                    break;
+                default:
+                    requests.add(new InvalidRequest(items));
+            }
+        }
+
+        return requests;
+    }
+
     private static void addMasterRequests(List<Request> requests, List<String> items) {
         Command command = Command.getCommandByName(items.get(0).toUpperCase());
 

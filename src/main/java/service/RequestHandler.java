@@ -27,10 +27,8 @@ public class RequestHandler extends Thread {
     @Override
     public void run() {
         try (Socket socket = client.getSocket()) {
-            BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
-
             while (socket.isConnected()) {
-                List<Request> requests = RequestParser.parseRequests(bis, conf);
+                List<Request> requests = handleRequests(socket);
 
                 for (Request request : requests) {
                     request.execute(client);
@@ -39,5 +37,14 @@ public class RequestHandler extends Thread {
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Exception processing client request. ", e);
         }
+    }
+
+    private List<Request> handleRequests(Socket socket) throws IOException {
+        BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+
+        if (client.inSubscribedMode()) {
+            return RequestParser.parseSubscriberRequests(bis);
+        }
+        return RequestParser.parseRequests(bis, conf);
     }
 }

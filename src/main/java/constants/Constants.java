@@ -9,5 +9,6 @@ public class Constants {
     public static final String MAX_LONG_VALUE = String.valueOf(Long.MAX_VALUE);
     public static final String ZERO_STREAM_ENTRY_ID = "0-0";
 
+    public static final String PONG = "PONG";
     public static final String SUBSCRIBE = "subscribe";
 }
