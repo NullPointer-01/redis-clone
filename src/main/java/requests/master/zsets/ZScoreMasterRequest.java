@@ -7,6 +7,8 @@ import requests.model.Command;
 import requests.model.Response;
 import util.RespSerializer;
 
+import java.math.BigDecimal;
+
 import static util.RespConstants.NULL_BULK_STRING;
 
 public class ZScoreMasterRequest extends AbstractRequest {
@@ -29,6 +31,7 @@ public class ZScoreMasterRequest extends AbstractRequest {
 
         }
 
-        return new Response(RespSerializer.asBulkString(score.toString()));
+        BigDecimal bd = new BigDecimal(String.valueOf(score));
+        return new Response(RespSerializer.asBulkString(bd.toPlainString()));
     }
 }
