@@ -25,6 +25,10 @@ public class Channel {
         clients.add(client);
     }
 
+    public void removeClient(Client client) {
+        clients.remove(client);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

@@ -7,6 +7,7 @@ import requests.master.TypeMasterCommand;
 import requests.master.lists.*;
 import requests.master.pubsub.PublishRequest;
 import requests.master.pubsub.SubscribeRequest;
+import requests.master.pubsub.UnsubscribeRequest;
 import requests.master.repl.PSyncMasterRequest;
 import requests.master.repl.ReplConfMasterRequest;
 import requests.master.streams.XAddMasterRequest;
@@ -80,6 +81,8 @@ public class RequestParser {
                     requests.add(new SubscribeRequest(items.get(1)));
                     break;
                 case UNSUBSCRIBE:
+                    requests.add(new UnsubscribeRequest(items.get(1)));
+                    break;
                 case PSUBSCRIBE:
                 case PUNSUBSCRIBE:
                 case QUIT:
