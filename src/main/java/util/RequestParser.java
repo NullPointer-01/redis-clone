@@ -5,6 +5,7 @@ import requests.*;
 import requests.master.InfoMasterRequest;
 import requests.master.TypeMasterCommand;
 import requests.master.lists.*;
+import requests.master.pubsub.PublishRequest;
 import requests.master.pubsub.SubscribeRequest;
 import requests.master.repl.PSyncMasterRequest;
 import requests.master.repl.ReplConfMasterRequest;
@@ -185,6 +186,9 @@ public class RequestParser {
                 break;
             case SUBSCRIBE:
                 requests.add(new SubscribeRequest(items.get(1)));
+                break;
+            case PUBLISH:
+                requests.add(new PublishRequest(items.get(1), items.get(2)));
                 break;
             default:
                 requests.add(new InvalidRequest(items));
