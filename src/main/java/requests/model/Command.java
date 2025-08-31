@@ -42,6 +42,8 @@ public enum Command {
     PUBLISH("PUBLISH"),
     QUIT("QUIT"),
 
+    GEOADD("GEOADD"),
+
     COMMAND("COMMAND"),
     INVALID("");
 

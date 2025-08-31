@@ -4,6 +4,7 @@ import conf.Configuration;
 import requests.*;
 import requests.master.InfoMasterRequest;
 import requests.master.TypeMasterCommand;
+import requests.master.geo.GeoAddMasterRequest;
 import requests.master.lists.*;
 import requests.master.pubsub.PublishRequest;
 import requests.master.pubsub.SubscribeRequest;
@@ -193,12 +194,15 @@ public class RequestParser {
             case PUBLISH:
                 requests.add(new PublishRequest(items.get(1), items.get(2)));
                 break;
+            case GEOADD:
+                requests.add(new GeoAddMasterRequest(items.get(1), items.subList(2, items.size())));
+                break;
             default:
                 requests.add(new InvalidRequest(items));
         }
     }
 
-    private static void addSlaveRequests(List<Request> requests, List<String> items) throws IOException {
+    private static void addSlaveRequests(List<Request> requests, List<String> items) {
         Command command = Command.getCommandByName(items.get(0).toUpperCase());
 
         switch (command) {
