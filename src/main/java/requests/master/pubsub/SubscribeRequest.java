@@ -5,6 +5,7 @@ import requests.model.Channel;
 import requests.model.Client;
 import requests.model.Command;
 import requests.model.Response;
+import service.PubSubManager;
 import util.RespSerializer;
 
 import java.io.IOException;
@@ -16,8 +17,8 @@ import static constants.Constants.SUBSCRIBE;
 public class SubscribeRequest implements Request {
     private final Channel channel;
 
-    public SubscribeRequest(String channel) {
-        this.channel = new Channel(channel);
+    public SubscribeRequest(String channelName) {
+        this.channel = PubSubManager.getInstance().getChannel(channelName);
     }
 
     @Override
