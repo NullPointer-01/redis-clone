@@ -6,6 +6,7 @@ import repository.Storage;
 import requests.AbstractRequest;
 import requests.model.Command;
 import requests.model.Response;
+import util.GeoHashUtil;
 import util.RespSerializer;
 
 import java.util.LinkedHashMap;
@@ -59,7 +60,7 @@ public class GeoAddMasterRequest extends AbstractRequest {
 
         for (Map.Entry<String, Location> entry : locations.entrySet()) {
             Location loc = entry.getValue();
-            double score = computeGeoHash(loc.getLatitude(), loc.getLongitude());
+            double score = GeoHashUtil.computeGeoHash(loc.getLatitude(), loc.getLongitude());
 
             if (storage.zAdd(entry.getKey(), loc.getName(), score)) {
                 count++;
@@ -72,35 +73,5 @@ public class GeoAddMasterRequest extends AbstractRequest {
     private boolean validateCoordinates(double latitude, double longitude) {
         return (latitude >= MIN_LATITUDE && latitude <= MAX_LATITUDE)
                 && (longitude >= MIN_LONGITUDE && longitude <= MAX_LONGITUDE);
-    }
-
-    private double computeGeoHash(double latitude, double longitude) {
-        int normalized_latitude = (int) (VAL_OF_2_POWER_26 * (latitude - MIN_LATITUDE) / LATITUDE_RANGE);
-        int normalized_longitude = (int) (VAL_OF_2_POWER_26 * (longitude - MIN_LONGITUDE) / LONGITUDE_RANGE);
-
-        return interleave(normalized_latitude, normalized_longitude);
-    }
-
-    private double interleave(int normalizedLatitude, int normalizedLongitude) {
-        long x = spreadInt32ToInt64(normalizedLatitude);
-        long y = spreadInt32ToInt64(normalizedLongitude);
-
-        y = y << 1;
-
-        return x | y;
-    }
-
-    public static long spreadInt32ToInt64(int v) {
-        // Ensure only lower 32 bits are non-zero.
-        long val = v & 0xFFFFFFFFL;
-
-        // Bitwise operations to spread 32 bits into 64 bits with zeros in-between
-        val = (val | (val << 16)) & 0x0000FFFF0000FFFFL;
-        val = (val | (val << 8))  & 0x00FF00FF00FF00FFL;
-        val = (val | (val << 4))  & 0x0F0F0F0F0F0F0F0FL;
-        val = (val | (val << 2))  & 0x3333333333333333L;
-        val = (val | (val << 1))  & 0x5555555555555555L;
-
-        return val;
     }
 }
