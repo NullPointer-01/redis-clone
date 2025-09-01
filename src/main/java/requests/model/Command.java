@@ -43,6 +43,7 @@ public enum Command {
     QUIT("QUIT"),
 
     GEOADD("GEOADD"),
+    GEOPOS("GEOPOS"),
 
     COMMAND("COMMAND"),
     INVALID("");

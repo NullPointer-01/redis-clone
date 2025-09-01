@@ -5,6 +5,7 @@ import requests.*;
 import requests.master.InfoMasterRequest;
 import requests.master.TypeMasterCommand;
 import requests.master.geo.GeoAddMasterRequest;
+import requests.master.geo.GeoPosMasterRequest;
 import requests.master.lists.*;
 import requests.master.pubsub.PublishRequest;
 import requests.master.pubsub.SubscribeRequest;
@@ -196,6 +197,9 @@ public class RequestParser {
                 break;
             case GEOADD:
                 requests.add(new GeoAddMasterRequest(items.get(1), items.subList(2, items.size())));
+                break;
+            case GEOPOS:
+                requests.add(new GeoPosMasterRequest(items.get(1), items.subList(2, items.size())));
                 break;
             default:
                 requests.add(new InvalidRequest(items));

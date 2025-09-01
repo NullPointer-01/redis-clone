@@ -40,6 +40,16 @@ public class RespSerializer {
         return sb.toString();
     }
 
+    public static String asArrayOfArrays(List<List<String>> lists) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(ASTERISK).append(lists.size()).append(CRLF);
+
+        for (List<String> list : lists) {
+            sb.append(asArray(list));
+        }
+        return sb.toString();
+    }
+
     public static String asXRangeArray(List<Entry<String, String>> entries) {
         int innerArraySize = 2;
 
