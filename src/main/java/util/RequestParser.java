@@ -26,11 +26,12 @@ import requests.master.txn.MultiMasterRequest;
 import requests.master.zsets.*;
 import requests.model.Command;
 import requests.slave.InfoSlaveRequest;
-import requests.slave.lists.LLenSlaveRequest;
-import requests.slave.lists.LRangeSlaveRequest;
 import requests.slave.repl.ReplConfSlaveRequest;
-import requests.slave.repl.SetSlaveRequest;
-import requests.slave.strings.GetSlaveRequest;
+import requests.slave.strings.DelSlaveRequest;
+import requests.slave.strings.IncrSlaveRequest;
+import requests.slave.strings.SetSlaveRequest;
+import requests.slave.zsets.ZAddSlaveRequest;
+import requests.slave.zsets.ZRemSlaveRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -121,7 +122,7 @@ public class RequestParser {
                 requests.add(new GetMasterRequest(items.get(1)));
                 break;
             case DEL:
-                requests.add(new DelMasterRequest(items.subList(2, items.size())));
+                requests.add(new DelMasterRequest(items.subList(1, items.size())));
                 break;
             case INCR:
                 requests.add(new IncrMasterRequest(items.get(1)));
@@ -235,6 +236,15 @@ public class RequestParser {
             case INFO:
                 requests.add(new InfoSlaveRequest());
                 break;
+            case ZCARD:
+                requests.add(new ZCardMasterRequest(items.get(1)));
+                break;
+            case ZSCORE:
+                requests.add(new ZScoreMasterRequest(items.get(1), items.get(2)));
+                break;
+            case ZRANGE:
+                requests.add(new ZRangeMasterRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
+                break;
             default:
                 requests.add(new InvalidRequest(items));
         }
@@ -261,6 +271,18 @@ public class RequestParser {
                 case SET:
                     Long timeToExpireInMillis = items.size() == 3 ? null : Long.parseLong(items.get(4));
                     requests.add(new SetSlaveRequest(items.get(1), items.get(2), timeToExpireInMillis));
+                    break;
+                case DEL:
+                    requests.add(new DelSlaveRequest(items.subList(1, items.size())));
+                    break;
+                case INCR:
+                    requests.add(new IncrSlaveRequest(items.get(1)));
+                    break;
+                case ZADD:
+                    requests.add(new ZAddSlaveRequest(items.get(1), Double.parseDouble(items.get(2)), items.get(3)));
+                    break;
+                case ZREM:
+                    requests.add(new ZRemSlaveRequest(items.get(1), items.get(2)));
                     break;
                 default:
                     throw new IOException("Invalid command " + command);

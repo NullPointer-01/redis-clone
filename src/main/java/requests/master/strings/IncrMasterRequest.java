@@ -3,10 +3,14 @@ package requests.master.strings;
 import repository.RepositoryManager;
 import repository.Storage;
 import requests.AbstractRequest;
+import requests.model.Client;
 import requests.model.Command;
 import requests.model.Response;
+import service.MasterReplicationHandler;
 import util.RespSerializer;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 
 import static constants.ErrorConstants.ERROR_NOT_AN_INTEGER;
@@ -38,5 +42,13 @@ public class IncrMasterRequest extends AbstractRequest {
         } catch (NumberFormatException e) {
             return new Response(ERROR_NOT_AN_INTEGER);
         }
+    }
+
+    @Override
+    public void postExecute(Client ignored) {
+        List<String> requestParts = List.of(command.getName(), key);
+
+        byte[] request = RespSerializer.asArray(requestParts).getBytes(StandardCharsets.UTF_8);
+        MasterReplicationHandler.getInstance().propagateRequests(request);
     }
 }
