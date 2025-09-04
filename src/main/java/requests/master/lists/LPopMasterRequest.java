@@ -3,10 +3,13 @@ package requests.master.lists;
 import repository.RepositoryManager;
 import repository.Storage;
 import requests.AbstractRequest;
+import requests.model.Client;
 import requests.model.Command;
 import requests.model.Response;
+import service.MasterReplicationHandler;
 import util.RespSerializer;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static util.RespConstants.EMPTY_RESP_ARRAY;
@@ -36,5 +39,13 @@ public class LPopMasterRequest extends AbstractRequest {
         if (elements.isEmpty()) return new Response(EMPTY_RESP_ARRAY);
 
         return new Response(RespSerializer.asArray(elements));
+    }
+
+    @Override
+    public void postExecute(Client ignored) {
+        List<String> requestParts = List.of(command.getName(), listKey, String.valueOf(count));
+
+        byte[] request = RespSerializer.asArray(requestParts).getBytes(StandardCharsets.UTF_8);
+        MasterReplicationHandler.getInstance().propagateRequests(request);
     }
 }

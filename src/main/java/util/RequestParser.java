@@ -26,6 +26,9 @@ import requests.master.txn.MultiMasterRequest;
 import requests.master.zsets.*;
 import requests.model.Command;
 import requests.slave.InfoSlaveRequest;
+import requests.slave.lists.LPopSlaveRequest;
+import requests.slave.lists.LPushSlaveRequest;
+import requests.slave.lists.RPushSlaveRequest;
 import requests.slave.repl.ReplConfSlaveRequest;
 import requests.slave.strings.DelSlaveRequest;
 import requests.slave.strings.IncrSlaveRequest;
@@ -277,6 +280,16 @@ public class RequestParser {
                     break;
                 case INCR:
                     requests.add(new IncrSlaveRequest(items.get(1)));
+                    break;
+                case RPUSH:
+                    requests.add(new RPushSlaveRequest(items.get(1), items.subList(2, items.size())));
+                    break;
+                case LPUSH:
+                    requests.add(new LPushSlaveRequest(items.get(1), items.subList(2, items.size())));
+                    break;
+                case LPOP:
+                    Integer count = items.size() == 3 ? Integer.parseInt(items.get(2)) : null;
+                    requests.add(new LPopSlaveRequest(items.get(1), count));
                     break;
                 case ZADD:
                     requests.add(new ZAddSlaveRequest(items.get(1), Double.parseDouble(items.get(2)), items.get(3)));
