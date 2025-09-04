@@ -224,13 +224,13 @@ public class RequestParser {
                 requests.add(new EchoRequest(items.get(1)));
                 break;
             case GET:
-                requests.add(new GetSlaveRequest(items.get(1)));
+                requests.add(new GetMasterRequest(items.get(1)));
                 break;
             case LRANGE:
-                requests.add(new LRangeSlaveRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
+                requests.add(new LRangeMasterRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
                 break;
             case LLEN:
-                requests.add(new LLenSlaveRequest(items.get(1)));
+                requests.add(new LLenMasterRequest(items.get(1)));
                 break;
             case INFO:
                 requests.add(new InfoSlaveRequest());

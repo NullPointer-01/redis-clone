@@ -2,11 +2,7 @@ package util;
 
 import java.util.List;
 
-import static constants.Constants.LATITUDE_RANGE;
-import static constants.Constants.LONGITUDE_RANGE;
-import static constants.Constants.MIN_LATITUDE;
-import static constants.Constants.MIN_LONGITUDE;
-import static constants.Constants.VAL_OF_2_POWER_26;
+import static constants.Constants.*;
 
 public class GeoHashUtil {
     public static final double EARTH_RADIUS_IN_METERS = 6372797.560856; // In metres

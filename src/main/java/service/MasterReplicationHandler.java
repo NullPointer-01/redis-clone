@@ -95,7 +95,7 @@ public class MasterReplicationHandler extends Thread {
                 int bytesProcessed = Integer.parseInt(items.get(2));
                 replica.setBytesProcessed(bytesProcessed);
 
-                LOGGER.log(Level.SEVERE, "Bytes processed " + bytesProcessed);
+                LOGGER.log(Level.INFO, "Bytes processed " + bytesProcessed);
 
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "Exception propagating request to replica. " + e);
