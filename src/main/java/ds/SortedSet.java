@@ -31,6 +31,7 @@ public class SortedSet<T extends Comparable<? super T>> {
     public boolean zRem(T value) {
         if (membersVsScores.containsKey(value)) {
             double score = membersVsScores.get(value);
+            membersVsScores.remove(value);
             skipList.delete(value, score);
             return true;
         }
