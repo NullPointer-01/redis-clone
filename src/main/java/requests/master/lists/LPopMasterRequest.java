@@ -6,6 +6,7 @@ import requests.AbstractRequest;
 import requests.model.Client;
 import requests.model.Command;
 import requests.model.Response;
+import service.AOFPersistenceHandler;
 import service.MasterReplicationHandler;
 import util.RespSerializer;
 
@@ -47,5 +48,6 @@ public class LPopMasterRequest extends AbstractRequest {
 
         byte[] request = RespSerializer.asArray(requestParts).getBytes(StandardCharsets.UTF_8);
         MasterReplicationHandler.getInstance().propagateRequests(request);
+        AOFPersistenceHandler.getInstance().appendRequest(String.join(" ", requestParts));
     }
 }

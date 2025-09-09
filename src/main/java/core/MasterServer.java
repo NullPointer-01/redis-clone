@@ -1,6 +1,7 @@
 package core;
 
 import conf.Configuration;
+import service.AOFPersistenceHandler;
 import service.RequestHandler;
 
 import java.io.IOException;
@@ -18,6 +19,8 @@ public class MasterServer extends Server {
     public void run() {
         try (ServerSocket serverSocket = new ServerSocket(conf.getPort())) {
             serverSocket.setReuseAddress(true);
+
+            AOFPersistenceHandler.getInstance().loadFromAof();
 
             while (serverSocket.isBound() && !serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();

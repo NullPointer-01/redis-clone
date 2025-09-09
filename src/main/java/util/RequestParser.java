@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static constants.Constants.NULL_STRING;
 import static util.RespConstants.ASTERISK;
 
 public class RequestParser {
@@ -309,5 +310,33 @@ public class RequestParser {
         while (is.available() > 0) {
             char ignored = (char) is.read();
         }
+    }
+
+    public static Request parseAOFRequests(String line) {
+        List<String> parts = List.of(line.split(" "));
+        Command command = Command.getCommandByName(parts.get(0).toUpperCase());
+
+        switch (command) {
+            case SET:
+                Long timeToExpireInMillis = parts.size() == 3 ? null : Long.parseLong(parts.get(4));
+                return new SetSlaveRequest(parts.get(1), parts.get(2), timeToExpireInMillis);
+            case DEL:
+                return new DelSlaveRequest(parts.subList(1, parts.size()));
+            case INCR:
+                return new IncrSlaveRequest(parts.get(1));
+            case RPUSH:
+                return new RPushSlaveRequest(parts.get(1), parts.subList(2, parts.size()));
+            case LPUSH:
+                return new LPushSlaveRequest(parts.get(1), parts.subList(2, parts.size()));
+            case LPOP:
+                Integer count = parts.get(2).equals(NULL_STRING) ? null : Integer.parseInt(parts.get(2));
+                return new LPopSlaveRequest(parts.get(1), count);
+            case ZADD:
+                return new ZAddSlaveRequest(parts.get(1), Double.parseDouble(parts.get(2)), parts.get(3));
+            case ZREM:
+                return new ZRemSlaveRequest(parts.get(1), parts.get(2));
+        }
+
+        return new InvalidRequest(parts);
     }
 }

@@ -4,6 +4,8 @@ public class ConfigurationConstants {
     public static final ROLE DEFAULT_ROLE = ROLE.MASTER;
     public static final Integer DEFAULT_PORT = 6379;
 
+    public static final String AOF_FILE_PATH = "src/main/resources/persistence/aof.txt";
+
     public enum ARGUMENT {
         PORT("--port"),
         REPLICA_OF("--replicaof");
