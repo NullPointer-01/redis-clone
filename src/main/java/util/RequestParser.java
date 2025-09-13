@@ -101,7 +101,7 @@ public class RequestParser {
                     requests.add(new PingRequest());
                     break;
                 default:
-                    requests.add(new InvalidRequest(items));
+                    requests.add(new UnsupportedRequest(items));
             }
         }
 
@@ -112,149 +112,157 @@ public class RequestParser {
     private static void addMasterRequests(List<Request> requests, List<String> items) {
         Command command = Command.getCommandByName(items.get(0).toUpperCase());
 
-        switch (command) {
-            case COMMAND:
-                requests.add(new CommandRequest());
-                break;
-            case PING:
-                requests.add(new PingRequest());
-                break;
-            case ECHO:
-                requests.add(new EchoRequest(items.get(1)));
-                break;
-            case SET:
-                Long timeToExpireInMillis = items.size() == 3 ? null : Long.parseLong(items.get(4));
-                requests.add(new SetMasterRequest(items.get(1), items.get(2), timeToExpireInMillis));
-                break;
-            case GET:
-                requests.add(new GetMasterRequest(items.get(1)));
-                break;
-            case DEL:
-                requests.add(new DelMasterRequest(items.subList(1, items.size())));
-                break;
-            case INCR:
-                requests.add(new IncrMasterRequest(items.get(1)));
-                break;
-            case RPUSH:
-                requests.add(new RPushMasterRequest(items.get(1), items.subList(2, items.size())));
-                break;
-            case LPUSH:
-                requests.add(new LPushMasterRequest(items.get(1), items.subList(2, items.size())));
-                break;
-            case LPOP:
-                Integer count = items.size() == 3 ? Integer.parseInt(items.get(2)) : null;
-                requests.add(new LPopMasterRequest(items.get(1), count));
-                break;
-            case LRANGE:
-                requests.add(new LRangeMasterRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
-                break;
-            case LLEN:
-                requests.add(new LLenMasterRequest(items.get(1)));
-                break;
-            case INFO:
-                requests.add(new InfoMasterRequest());
-                break;
-            case REPLCONF:
-                requests.add(new ReplConfMasterRequest());
-                break;
-            case PSYNC:
-                requests.add(new PSyncMasterRequest());
-                break;
-            case MULTI:
-                requests.add(new MultiMasterRequest());
-                break;
-            case EXEC:
-                requests.add(new ExecMasterRequest());
-                break;
-            case DISCARD:
-                requests.add(new DiscardMasterRequest());
-                break;
-            case TYPE:
-                requests.add(new TypeMasterCommand(items.get(1)));
-                break;
-            case XADD:
-                requests.add(new XAddMasterRequest(items.get(1), items.get(2), items.subList(3, items.size())));
-                break;
-            case XRANGE:
-                requests.add(new XRangeMasterRequest(items.get(1), items.get(2), items.get(3)));
-                break;
-            case XREAD:
-                requests.add(new XReadMasterRequest(items.subList(2, items.size())));
-                break;
-            case ZADD:
-                requests.add(new ZAddMasterRequest(items.get(1), Double.parseDouble(items.get(2)), items.get(3)));
-                break;
-            case ZREM:
-                requests.add(new ZRemMasterRequest(items.get(1), items.get(2)));
-                break;
-            case ZRANK:
-                requests.add(new ZRankMasterRequest(items.get(1), items.get(2)));
-                break;
-            case ZCARD:
-                requests.add(new ZCardMasterRequest(items.get(1)));
-                break;
-            case ZSCORE:
-                requests.add(new ZScoreMasterRequest(items.get(1), items.get(2)));
-                break;
-            case ZRANGE:
-                requests.add(new ZRangeMasterRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
-                break;
-            case SUBSCRIBE:
-                requests.add(new SubscribeRequest(items.get(1)));
-                break;
-            case PUBLISH:
-                requests.add(new PublishRequest(items.get(1), items.get(2)));
-                break;
-            case GEOADD:
-                requests.add(new GeoAddMasterRequest(items.get(1), items.subList(2, items.size())));
-                break;
-            case GEOPOS:
-                requests.add(new GeoPosMasterRequest(items.get(1), items.subList(2, items.size())));
-                break;
-            case GEODIST:
-                requests.add(new GeoDistMasterRequest(items.get(1), items.get(2), items.get(3)));
-                break;
-            default:
-                requests.add(new InvalidRequest(items));
+        try {
+            switch (command) {
+                case COMMAND:
+                    requests.add(new CommandRequest());
+                    break;
+                case PING:
+                    requests.add(new PingRequest());
+                    break;
+                case ECHO:
+                    requests.add(new EchoRequest(items.get(1)));
+                    break;
+                case SET:
+                    Long timeToExpireInMillis = items.size() == 3 ? null : Long.parseLong(items.get(4));
+                    requests.add(new SetMasterRequest(items.get(1), items.get(2), timeToExpireInMillis));
+                    break;
+                case GET:
+                    requests.add(new GetMasterRequest(items.get(1)));
+                    break;
+                case DEL:
+                    requests.add(new DelMasterRequest(items.subList(1, items.size())));
+                    break;
+                case INCR:
+                    requests.add(new IncrMasterRequest(items.get(1)));
+                    break;
+                case RPUSH:
+                    requests.add(new RPushMasterRequest(items.get(1), items.subList(2, items.size())));
+                    break;
+                case LPUSH:
+                    requests.add(new LPushMasterRequest(items.get(1), items.subList(2, items.size())));
+                    break;
+                case LPOP:
+                    Integer count = items.size() == 3 ? Integer.parseInt(items.get(2)) : null;
+                    requests.add(new LPopMasterRequest(items.get(1), count));
+                    break;
+                case LRANGE:
+                    requests.add(new LRangeMasterRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
+                    break;
+                case LLEN:
+                    requests.add(new LLenMasterRequest(items.get(1)));
+                    break;
+                case INFO:
+                    requests.add(new InfoMasterRequest());
+                    break;
+                case REPLCONF:
+                    requests.add(new ReplConfMasterRequest());
+                    break;
+                case PSYNC:
+                    requests.add(new PSyncMasterRequest());
+                    break;
+                case MULTI:
+                    requests.add(new MultiMasterRequest());
+                    break;
+                case EXEC:
+                    requests.add(new ExecMasterRequest());
+                    break;
+                case DISCARD:
+                    requests.add(new DiscardMasterRequest());
+                    break;
+                case TYPE:
+                    requests.add(new TypeMasterCommand(items.get(1)));
+                    break;
+                case XADD:
+                    requests.add(new XAddMasterRequest(items.get(1), items.get(2), items.subList(3, items.size())));
+                    break;
+                case XRANGE:
+                    requests.add(new XRangeMasterRequest(items.get(1), items.get(2), items.get(3)));
+                    break;
+                case XREAD:
+                    requests.add(new XReadMasterRequest(items.subList(2, items.size())));
+                    break;
+                case ZADD:
+                    requests.add(new ZAddMasterRequest(items.get(1), Double.parseDouble(items.get(2)), items.get(3)));
+                    break;
+                case ZREM:
+                    requests.add(new ZRemMasterRequest(items.get(1), items.get(2)));
+                    break;
+                case ZRANK:
+                    requests.add(new ZRankMasterRequest(items.get(1), items.get(2)));
+                    break;
+                case ZCARD:
+                    requests.add(new ZCardMasterRequest(items.get(1)));
+                    break;
+                case ZSCORE:
+                    requests.add(new ZScoreMasterRequest(items.get(1), items.get(2)));
+                    break;
+                case ZRANGE:
+                    requests.add(new ZRangeMasterRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
+                    break;
+                case SUBSCRIBE:
+                    requests.add(new SubscribeRequest(items.get(1)));
+                    break;
+                case PUBLISH:
+                    requests.add(new PublishRequest(items.get(1), items.get(2)));
+                    break;
+                case GEOADD:
+                    requests.add(new GeoAddMasterRequest(items.get(1), items.subList(2, items.size())));
+                    break;
+                case GEOPOS:
+                    requests.add(new GeoPosMasterRequest(items.get(1), items.subList(2, items.size())));
+                    break;
+                case GEODIST:
+                    requests.add(new GeoDistMasterRequest(items.get(1), items.get(2), items.get(3)));
+                    break;
+                default:
+                    requests.add(new UnsupportedRequest(items));
+            }
+        } catch (RuntimeException e) {
+            requests.add(new InvalidRequest(items));
         }
     }
 
     private static void addSlaveRequests(List<Request> requests, List<String> items) {
         Command command = Command.getCommandByName(items.get(0).toUpperCase());
 
-        switch (command) {
-            case COMMAND:
-                requests.add(new CommandRequest());
-                break;
-            case PING:
-                requests.add(new PingRequest());
-                break;
-            case ECHO:
-                requests.add(new EchoRequest(items.get(1)));
-                break;
-            case GET:
-                requests.add(new GetMasterRequest(items.get(1)));
-                break;
-            case LRANGE:
-                requests.add(new LRangeMasterRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
-                break;
-            case LLEN:
-                requests.add(new LLenMasterRequest(items.get(1)));
-                break;
-            case INFO:
-                requests.add(new InfoSlaveRequest());
-                break;
-            case ZCARD:
-                requests.add(new ZCardMasterRequest(items.get(1)));
-                break;
-            case ZSCORE:
-                requests.add(new ZScoreMasterRequest(items.get(1), items.get(2)));
-                break;
-            case ZRANGE:
-                requests.add(new ZRangeMasterRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
-                break;
-            default:
-                requests.add(new InvalidRequest(items));
+        try {
+            switch (command) {
+                case COMMAND:
+                    requests.add(new CommandRequest());
+                    break;
+                case PING:
+                    requests.add(new PingRequest());
+                    break;
+                case ECHO:
+                    requests.add(new EchoRequest(items.get(1)));
+                    break;
+                case GET:
+                    requests.add(new GetMasterRequest(items.get(1)));
+                    break;
+                case LRANGE:
+                    requests.add(new LRangeMasterRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
+                    break;
+                case LLEN:
+                    requests.add(new LLenMasterRequest(items.get(1)));
+                    break;
+                case INFO:
+                    requests.add(new InfoSlaveRequest());
+                    break;
+                case ZCARD:
+                    requests.add(new ZCardMasterRequest(items.get(1)));
+                    break;
+                case ZSCORE:
+                    requests.add(new ZScoreMasterRequest(items.get(1), items.get(2)));
+                    break;
+                case ZRANGE:
+                    requests.add(new ZRangeMasterRequest(items.get(1), Integer.parseInt(items.get(2)), Integer.parseInt(items.get(3))));
+                    break;
+                default:
+                    requests.add(new UnsupportedRequest(items));
+            }
+        } catch (RuntimeException e) {
+            requests.add(new InvalidRequest(items));
         }
     }
 
@@ -342,6 +350,6 @@ public class RequestParser {
                 return new ZRemSlaveRequest(parts.get(1), parts.get(2));
         }
 
-        return new InvalidRequest(parts);
+        return new UnsupportedRequest(parts);
     }
 }
