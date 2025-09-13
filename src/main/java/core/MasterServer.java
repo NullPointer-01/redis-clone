@@ -2,11 +2,9 @@ package core;
 
 import conf.Configuration;
 import service.AOFPersistenceHandler;
-import service.RequestHandler;
+import service.EventLoop;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketException;
 import java.util.logging.Level;
 
@@ -17,15 +15,9 @@ public class MasterServer extends Server {
 
     @Override
     public void run() {
-        try (ServerSocket serverSocket = new ServerSocket(conf.getPort())) {
-            serverSocket.setReuseAddress(true);
-
+        try {
             AOFPersistenceHandler.getInstance().loadFromAof();
-
-            while (serverSocket.isBound() && !serverSocket.isClosed()) {
-                Socket socket = serverSocket.accept();
-                new RequestHandler(socket).start();
-            }
+            EventLoop.getInstance().start();
         } catch (SocketException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

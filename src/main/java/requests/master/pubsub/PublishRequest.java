@@ -9,7 +9,6 @@ import service.PubSubManager;
 import util.RespSerializer;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,11 +34,9 @@ public class PublishRequest extends AbstractRequest {
     public void postExecute(Client client) {
         for (Client subscriber : channel.getClients()) {
             try {
-                OutputStream outputStream = subscriber.getSocket().getOutputStream();
-                outputStream.write(RespSerializer.asArray(List.of(MESSAGE, channel.getName(), message)).getBytes(StandardCharsets.UTF_8));
-                outputStream.flush();
+                subscriber.write(RespSerializer.asArray(List.of(MESSAGE, channel.getName(), message)).getBytes(StandardCharsets.UTF_8));
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Message delivery failed for client: " + subscriber.getSocket().getInetAddress(), e);
+                LOGGER.log(Level.SEVERE, "Message delivery failed for client: " + client, e);
             }
         }
     }

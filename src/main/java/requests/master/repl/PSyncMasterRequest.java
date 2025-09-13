@@ -12,7 +12,6 @@ import service.MasterReplicationHandler;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.logging.Level;
@@ -48,9 +47,7 @@ public class PSyncMasterRequest extends AbstractRequest {
             System.arraycopy(header, 0, data, 0, header.length);
             System.arraycopy(emptyFileBytes, 0, data,  header.length, emptyFileBytes.length);
 
-            OutputStream outputStream = client.getSocket().getOutputStream();
-            outputStream.write(data);
-            outputStream.flush();
+            client.write(data);
 
             configuration.addReplica(new Replica(client));
 

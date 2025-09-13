@@ -1,12 +1,10 @@
 package core;
 
 import conf.Configuration;
-import service.RequestHandler;
+import service.EventLoop;
 import service.SlaveReplicationHandler;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketException;
 import java.util.logging.Level;
 
@@ -17,15 +15,9 @@ public class SlaveServer extends Server {
 
     @Override
     public void run() {
-        try (ServerSocket serverSocket = new ServerSocket(conf.getPort())) {
-            serverSocket.setReuseAddress(true);
-
+        try {
             new SlaveReplicationHandler(conf).start(); // Sync with master in separate thread
-
-            while (serverSocket.isBound() && !serverSocket.isClosed()) {
-                Socket socket = serverSocket.accept();
-                new RequestHandler(socket).start();
-            }
+            EventLoop.getInstance().start();
         } catch (SocketException e) {
             LOGGER.log(Level.SEVERE, "Socket Exception starting up redis slave server. " + e);
         } catch (IOException e) {

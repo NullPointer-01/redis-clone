@@ -3,15 +3,12 @@ package service;
 import conf.ConfigurationManager;
 import conf.MasterConfiguration;
 import core.Replica;
+import requests.model.Client;
 import requests.model.Command;
 import util.RespSerializer;
 import util.ResponseParser;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -61,9 +58,8 @@ public class MasterReplicationHandler extends Thread {
         CompletableFuture.runAsync(() -> {
             for (Replica replica : configuration.getReplicas()) {
                 try {
-                    OutputStream outputStream = replica.getSocket().getOutputStream();
-                    outputStream.write(request);
-                    outputStream.flush();
+                    Client client = replica.getClient();
+                    client.write(request);
                 } catch (IOException e) {
                     LOGGER.log(Level.SEVERE, "Exception propagating request to replica. " + e);
                 }
@@ -78,13 +74,10 @@ public class MasterReplicationHandler extends Thread {
     private static Runnable getAckTask(Replica replica) {
         return () -> {
             try {
-                Socket socket = replica.getSocket();
-                OutputStream outputStream = socket.getOutputStream();
-                outputStream.write(RespSerializer.asArray(REPLCONF_GETACK).getBytes(StandardCharsets.UTF_8));
-                outputStream.flush();
+                Client client = replica.getClient();
+                client.write(RespSerializer.asArray(REPLCONF_GETACK).getBytes(StandardCharsets.UTF_8));
 
-                InputStream is = new BufferedInputStream(socket.getInputStream());
-                List<String> items = ResponseParser.parseResponse(is);
+                List<String> items = ResponseParser.parseResponse(client);
 
                 if (!Command.REPLCONF.getName().equalsIgnoreCase(items.get(0))
                         || !ACK.equalsIgnoreCase((items.get(1)))) {

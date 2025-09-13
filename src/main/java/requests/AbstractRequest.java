@@ -5,8 +5,6 @@ import requests.model.Command;
 import requests.model.Response;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.util.logging.Logger;
 
 import static util.RespConstants.QUEUED_SIMPLE_STRING;
@@ -29,19 +27,13 @@ public abstract class AbstractRequest implements Request {
         if (client.inTransaction()) {
             Response response = new Response(QUEUED_SIMPLE_STRING);
             client.queueRequest(this);
-            writeOutputToSocket(client.getSocket(), response);
+            client.write(response.getResponse());
             return;
         }
 
         Response response = doExecute();
-        writeOutputToSocket(client.getSocket(), response);
+        client.write(response.getResponse());
         postExecute(client);
-    }
-
-    private static void writeOutputToSocket(Socket socket, Response response) throws IOException {
-        OutputStream outputStream = socket.getOutputStream();
-        outputStream.write(response.getResponse());
-        outputStream.flush();
     }
 
     public abstract Response doExecute();

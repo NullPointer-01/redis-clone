@@ -8,7 +8,6 @@ import requests.model.Command;
 import requests.model.Response;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -28,10 +27,7 @@ public class ExecMasterRequest implements Request {
     public void execute(Client client) throws IOException {
         if (!client.inTransaction()) {
             Response response = new Response(ErrorConstants.ERROR_EXEC_WITHOUT_MULTI);
-
-            OutputStream outputStream = client.getSocket().getOutputStream();
-            outputStream.write(response.getResponse());
-            outputStream.flush();
+            client.write(response.getResponse());
             return;
         }
 
@@ -43,10 +39,7 @@ public class ExecMasterRequest implements Request {
             execResponse.append(response.getResponseAsStr());
         }
 
-        OutputStream outputStream = client.getSocket().getOutputStream();
-        outputStream.write(execResponse.toString().getBytes(StandardCharsets.UTF_8));
-        outputStream.flush();
-
+        client.write(execResponse.toString().getBytes(StandardCharsets.UTF_8));
         client.endTransaction();
     }
 }

@@ -2,7 +2,7 @@ package core;
 
 import requests.model.Client;
 
-import java.net.Socket;
+import java.nio.ByteBuffer;
 
 public class Replica {
     private final Client client;
@@ -12,11 +12,15 @@ public class Replica {
         this.client = client;
     }
 
-    public Socket getSocket() {
-        return client.getSocket();
+    public ByteBuffer getBuffer() {
+        return client.getBuffer();
     }
 
     public void setBytesProcessed(int bytesProcessed) {
         this.bytesProcessed = bytesProcessed;
+    }
+
+    public Client getClient() {
+        return client;
     }
 }

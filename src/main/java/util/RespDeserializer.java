@@ -1,7 +1,7 @@
 package util;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,70 +13,71 @@ public class RespDeserializer {
     // Private constructor to prevent instantiations
     private RespDeserializer() {}
 
-    public static Object parse(InputStream is) throws IOException {
-       char c = (char) is.read();
+    public static Object parse(ByteBuffer buffer) throws IOException {
+       char c = (char) buffer.get();
 
        switch (c) {
            case '*' -> {
-               return parseArray(is);
+               return parseArray(buffer);
            }
            case '$' -> {
-               return parseBulkString(is);
+               return parseBulkString(buffer);
            }
            default -> throw new IOException("Invalid byte " + c);
        }
     }
 
-    public static List<Object> parseArray(InputStream is) throws IOException {
+    public static List<Object> parseArray(ByteBuffer buffer) throws IOException {
         List<Object> items = new ArrayList<>();
 
-        int len = readLength(is);
+        int len = readLength(buffer);
         for (int i = 0; i < len; i++) {
-            items.add(parse(is));
+            items.add(parse(buffer));
         }
 
         return items;
     }
 
-    public static String parseBulkString(InputStream is) throws IOException {
-        int len = readLength(is);
-        byte[] data = is.readNBytes(len);
+    public static String parseBulkString(ByteBuffer buffer) throws IOException {
+        int len = readLength(buffer);
+        byte[] data = new byte[len];
+        buffer.get(data);
 
-        validateCRLF(is);
+        validateCRLF(buffer);
 
         return new String(data, StandardCharsets.UTF_8);
     }
 
-    private static int readLength(InputStream is) throws IOException {
-        return Integer.parseInt(readLine(is));
+    private static int readLength(ByteBuffer buffer) throws IOException {
+        return Integer.parseInt(readLine(buffer));
     }
 
-    private static String readLine(InputStream is) throws IOException {
+    private static String readLine(ByteBuffer buffer) throws IOException {
         StringBuilder sb = new StringBuilder();
         int data;
 
-        while ((data = is.read()) != CR) {
+        while ((data = buffer.get()) != CR) {
             sb.append((char) data);
         }
-        validateLF(is);
+        validateLF(buffer);
 
         return sb.toString();
     }
 
-    private static void validateCRLF(InputStream is) throws IOException {
-        validateCR(is);
-        validateLF(is);
+    private static void validateCRLF(ByteBuffer buffer) throws IOException {
+        validateCR(buffer);
+        validateLF(buffer);
     }
 
-    private static void validateCR(InputStream is) throws IOException {
-        char c = (char) is.read();
+    private static void validateCR(ByteBuffer buffer) throws IOException {
+        char c = (char) buffer.get();
         if (c != CR) {
             throw new IOException("Expected Carriage return missing");
         }
     }
 
-    private static void validateLF(InputStream is) throws IOException {
-        char c = (char) is.read();
+    private static void validateLF(ByteBuffer buffer) throws IOException {
+        char c = (char) buffer.get();
         if (c != LF) {
             throw new IOException("Expected Line feed missing");
         }

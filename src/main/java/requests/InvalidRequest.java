@@ -7,7 +7,6 @@ import requests.model.Response;
 import util.RespConstants;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,10 +31,7 @@ public class InvalidRequest implements Request {
             response = getErrorResponse();
         }
 
-        OutputStream outputStream = client.getSocket().getOutputStream();
-        outputStream.write(response.getResponse());
-
-        outputStream.flush();
+        client.write(response.getResponse());
     }
 
     private Response getSubscribedModeErrorResponse() {

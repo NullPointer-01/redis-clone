@@ -7,11 +7,10 @@ import requests.model.Client;
 import util.RequestParser;
 import util.RespSerializer;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Level;
@@ -45,10 +44,11 @@ public class SlaveReplicationHandler extends Thread {
         int retryDelay = 1000;
 
         while (true) {
-            try (Socket ignored = new Socket(masterHost, masterPort)) {
+            try (SocketChannel ignored = SocketChannel.open()) {
+                ignored.connect(new InetSocketAddress(masterHost, masterPort));
                 break;
             } catch (IOException e) {
-                LOGGER.log(Level.INFO, "Port not open, retrying...");
+                LOGGER.log(Level.INFO, "Port not open, retrying...", e);
                 try {
                     Thread.sleep(retryDelay);
                 } catch (InterruptedException ignored) {
@@ -56,16 +56,26 @@ public class SlaveReplicationHandler extends Thread {
             }
         }
 
-        try (Socket socket = new Socket(masterHost, masterPort)) {
-            Client client = new Client(socket);
-            BufferedInputStream is = new BufferedInputStream(socket.getInputStream());
+        try (SocketChannel socketChannel = SocketChannel.open()) {
+            socketChannel.connect(new InetSocketAddress(masterHost, masterPort));
+            socketChannel.configureBlocking(true);
+
+            Client client = new Client(socketChannel);
 
             initiateHandshake(client);
             receiveRdbFile(client);
 
             LOGGER.log(Level.INFO, "Waiting for requests from master...");
-            while (socket.isConnected()) {
-                List<Request> requests = RequestParser.parseReplicationRequests(is);
+            while (true) {
+                ByteBuffer buffer = client.getBuffer();
+
+                int read = client.read(buffer);
+                if (read == -1) {
+                    break;
+                }
+
+                List<Request> requests = RequestParser.parseReplicationRequests(buffer);
+
                 for (Request request : requests) {
                     request.execute(client);
                 }
@@ -76,25 +86,20 @@ public class SlaveReplicationHandler extends Thread {
     }
 
     private void initiateHandshake(Client client) throws IOException {
-        Socket socket = client.getSocket();
-
-        OutputStream outputStream = socket.getOutputStream();
-        InputStream inputStream = socket.getInputStream();
-
         // Max of length of (PONG, OK, FULL_RESYNC)
         int pongLen = PONG_SIMPLE_STRING.getBytes().length;
         int okLen = OK_SIMPLE_STRING.getBytes().length;
         int fullResyncLen = 56; // +FULLRESYNC <REPL_ID> 0\r\n
 
-        byte[] buf = new byte[fullResyncLen];
+        ByteBuffer buffer = client.getBuffer();
 
         // Send PING
         String PING = RespSerializer.asArray(List.of("PING"));
-        outputStream.write(PING.getBytes(StandardCharsets.UTF_8));
-        outputStream.flush();
+        client.write(PING.getBytes(StandardCharsets.UTF_8));
 
-        inputStream.read(buf, 0, pongLen);
-        String response1 = new String(buf, 0, pongLen, StandardCharsets.UTF_8);
+        client.read(buffer);
+        String response1 = new String(buffer.array(), 0, pongLen, StandardCharsets.UTF_8);
+        buffer.clear();
 
         if (!PONG_SIMPLE_STRING.equals(response1)) {
             throw new IOException("Handshake with master failed, expected PONG");
@@ -102,11 +107,11 @@ public class SlaveReplicationHandler extends Thread {
 
         // Send REPLCONF listening-port
         String REPL_CONF_1 = RespSerializer.asArray(List.of("REPLCONF", "listening-port", conf.getPort().toString()));
-        outputStream.write(REPL_CONF_1.getBytes(StandardCharsets.UTF_8));
-        outputStream.flush();
+        client.write(REPL_CONF_1.getBytes(StandardCharsets.UTF_8));
 
-        inputStream.read(buf, 0, okLen);
-        String response2 = new String(buf, 0, okLen, StandardCharsets.UTF_8);
+        client.read(buffer);
+        String response2 = new String(buffer.array(), 0, okLen, StandardCharsets.UTF_8);
+        buffer.clear();
 
         if (!OK_SIMPLE_STRING.equals(response2)) {
             throw new IOException("Handshake with master failed, expected OK for REPLCONF listening-port");
@@ -114,11 +119,11 @@ public class SlaveReplicationHandler extends Thread {
 
         // Send REPLCONF capa
         String REPL_CONF_2 = RespSerializer.asArray(List.of("REPLCONF", "capa", "psync2"));
-        outputStream.write(REPL_CONF_2.getBytes(StandardCharsets.UTF_8));
-        outputStream.flush();
+        client.write(REPL_CONF_2.getBytes(StandardCharsets.UTF_8));
 
-        inputStream.read(buf, 0, okLen);
-        String response3 = new String(buf, 0, okLen, StandardCharsets.UTF_8);
+        client.read(buffer);
+        String response3 = new String(buffer.array(), 0, okLen, StandardCharsets.UTF_8);
+        buffer.clear();
 
         if (!OK_SIMPLE_STRING.equals(response3)) {
             throw new IOException("Handshake with master failed, expected OK for REPLCONF capa");
@@ -126,13 +131,13 @@ public class SlaveReplicationHandler extends Thread {
 
         // Send PSYNC
         String PSYNC = RespSerializer.asArray(List.of("PSYNC", "?", "-1"));
-        outputStream.write(PSYNC.getBytes(StandardCharsets.UTF_8));
-        outputStream.flush();
+        client.write(PSYNC.getBytes(StandardCharsets.UTF_8));
 
-        inputStream.read(buf, 0, fullResyncLen);
-        String response4 = new String(buf, 0, fullResyncLen, StandardCharsets.UTF_8);
+        client.read(buffer);
+        String response4 = new String(buffer.array(), 0, fullResyncLen, StandardCharsets.UTF_8);
+        buffer.clear();
+
         Matcher matcher = FULL_RESYNC_PATTERN.matcher(response4);
-
         if (!matcher.matches()) {
             throw new IOException("Handshake with master failed, expected proper response for PSYNC");
         }
@@ -141,9 +146,9 @@ public class SlaveReplicationHandler extends Thread {
     }
 
     private void receiveRdbFile(Client client) throws IOException {
-        Socket socket = client.getSocket();
-        BufferedInputStream is = new BufferedInputStream(socket.getInputStream());
+        ByteBuffer buffer = client.getBuffer();
+        client.read(buffer);
 
-        RequestParser.parseRdbFile(is, conf);
+        RequestParser.parseRdbFile(buffer);
     }
 }

@@ -2,26 +2,38 @@ package requests.model;
 
 import requests.Request;
 
-import java.net.Socket;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.*;
 
 public class Client {
-    private final Socket socket;
+    private final SocketChannel socketChannel;
+    private final ByteBuffer buffer;
 
     private MODE mode;
     private final List<Request> queuedRequests;
     private final Set<Channel> subscribedChannels;
 
-    public Client(Socket socket) {
-        this.socket = socket;
+    public Client(SocketChannel socketChannel) {
+        this.socketChannel = socketChannel;
+        this.buffer = ByteBuffer.allocate(1024);
         this.mode = MODE.NORMAL;
 
         queuedRequests = new LinkedList<>();
         subscribedChannels = new HashSet<>();
     }
 
-    public Socket getSocket() {
-        return socket;
+    public void write(byte[] bytes) throws IOException {
+        socketChannel.write(ByteBuffer.wrap(bytes));
+    }
+
+    public int read(ByteBuffer buffer) throws IOException {
+        return socketChannel.read(buffer);
+    }
+
+    public ByteBuffer getBuffer() {
+        return buffer;
     }
 
     public List<Request> getQueuedRequests() {

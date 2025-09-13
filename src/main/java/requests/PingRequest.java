@@ -6,7 +6,6 @@ import requests.model.Response;
 import util.RespSerializer;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 import static constants.Constants.PONG;
@@ -30,9 +29,6 @@ public class PingRequest implements Request {
             response = new Response(PONG_SIMPLE_STRING);
         }
 
-        OutputStream outputStream = client.getSocket().getOutputStream();
-        outputStream.write(response.getResponse());
-
-        outputStream.flush();
+        client.write(response.getResponse());
     }
 }

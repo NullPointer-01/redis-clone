@@ -9,7 +9,6 @@ import service.PubSubManager;
 import util.RespSerializer;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 import static constants.Constants.UNSUBSCRIBE;
@@ -36,10 +35,7 @@ public class UnsubscribeRequest implements Request {
         Response response = new Response(RespSerializer.asArray(
                 List.of(UNSUBSCRIBE, channel.getName(), String.valueOf(client.getChannels().size())))
         );
-        OutputStream outputStream = client.getSocket().getOutputStream();
-        outputStream.write(response.getResponse());
-
-        outputStream.flush();
+        client.write(response.getResponse());
     }
 }
 

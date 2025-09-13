@@ -37,7 +37,7 @@ import requests.slave.zsets.ZAddSlaveRequest;
 import requests.slave.zsets.ZRemSlaveRequest;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,16 +48,17 @@ public class RequestParser {
     // Private constructor to prevent instantiations
     private RequestParser() {}
 
-    public static List<Request> parseRequests(InputStream is, Configuration conf) throws IOException {
+    public static List<Request> parseRequests(ByteBuffer buffer, Configuration conf) throws IOException {
         List<Request> requests = new ArrayList<>();
+        buffer.flip();
 
-        while (is.available() > 0) {
-            char c = (char) is.read();
+        while (buffer.hasRemaining()) {
+            char c = (char) buffer.get();
             if (c != ASTERISK) {
                 throw new IOException("Invalid byte, expected array " + c);
             }
 
-            List<Object> itemsTmp = RespDeserializer.parseArray(is);
+            List<Object> itemsTmp = RespDeserializer.parseArray(buffer);
             List<String> items = itemsTmp.stream().map(i -> (String) i).toList();
 
             if (conf.isMaster()) {
@@ -67,19 +68,21 @@ public class RequestParser {
             }
         }
 
+        buffer.clear();
         return requests;
     }
 
-    public static List<Request> parseSubscriberRequests(InputStream is) throws IOException {
+    public static List<Request> parseSubscriberRequests(ByteBuffer buffer) throws IOException {
         List<Request> requests = new ArrayList<>();
+        buffer.flip();
 
-        while (is.available() > 0) {
-            char c = (char) is.read();
+        while (buffer.hasRemaining()) {
+            char c = (char) buffer.get();
             if (c != ASTERISK) {
                 throw new IOException("Invalid byte, expected array " + c);
             }
 
-            List<Object> itemsTmp = RespDeserializer.parseArray(is);
+            List<Object> itemsTmp = RespDeserializer.parseArray(buffer);
             List<String> items = itemsTmp.stream().map(i -> (String) i).toList();
 
             Command command = Command.getCommandByName(items.get(0).toUpperCase());
@@ -102,6 +105,7 @@ public class RequestParser {
             }
         }
 
+        buffer.clear();
         return requests;
     }
 
@@ -254,16 +258,17 @@ public class RequestParser {
         }
     }
 
-    public static List<Request> parseReplicationRequests(InputStream is) throws IOException {
+    public static List<Request> parseReplicationRequests(ByteBuffer buffer) throws IOException {
         List<Request> requests = new ArrayList<>();
+        buffer.flip();
 
-        while (is.available() > 0) {
-            char c = (char) is.read();
+        while (buffer.hasRemaining()) {
+            char c = (char) buffer.get();
             if (c != ASTERISK) {
                 continue;
             }
 
-            List<Object> itemsTmp = RespDeserializer.parseArray(is);
+            List<Object> itemsTmp = RespDeserializer.parseArray(buffer);
             List<String> items = itemsTmp.stream().map(i -> (String) i).toList();
 
             Command command = Command.getCommandByName(items.get(0).toUpperCase());
@@ -303,13 +308,13 @@ public class RequestParser {
             }
         }
 
+        buffer.clear();
         return requests;
     }
 
-    public static void parseRdbFile(InputStream is, Configuration conf) throws IOException {
-        while (is.available() > 0) {
-            char ignored = (char) is.read();
-        }
+    public static void parseRdbFile(ByteBuffer buffer) {
+        buffer.flip();
+        buffer.clear();
     }
 
     public static Request parseAOFRequests(String line) {
