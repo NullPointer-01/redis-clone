@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +25,7 @@ public class MasterReplicationHandler extends Thread {
     private static final String ACK = "ACK";
 
     private volatile boolean isRunning;
+    private final ExecutorService executorService;
     private final MasterConfiguration configuration;
 
     public static MasterReplicationHandler getInstance() {
@@ -36,6 +39,7 @@ public class MasterReplicationHandler extends Thread {
 
     private MasterReplicationHandler() {
         this.configuration = (MasterConfiguration) ConfigurationManager.getInstance().getConfiguration();
+        this.executorService = Executors.newSingleThreadExecutor();
     }
 
     @Override
@@ -55,7 +59,7 @@ public class MasterReplicationHandler extends Thread {
     }
 
     public void propagateRequests(byte[] request) {
-        CompletableFuture.runAsync(() -> {
+        executorService.submit(() -> {
             for (Replica replica : configuration.getReplicas()) {
                 try {
                     Client client = replica.getClient();

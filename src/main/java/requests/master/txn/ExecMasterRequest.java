@@ -38,8 +38,12 @@ public class ExecMasterRequest implements Request {
             Response response = ((AbstractRequest) queuedRequest).doExecute();
             execResponse.append(response.getResponseAsStr());
         }
-
         client.write(execResponse.toString().getBytes(StandardCharsets.UTF_8));
+
+        for (Request queuedRequest : queuedRequests) {
+            ((AbstractRequest) queuedRequest).postExecute(client);
+        }
+
         client.endTransaction();
     }
 }
