@@ -7,6 +7,7 @@ import requests.master.TypeMasterCommand;
 import requests.master.geo.GeoAddMasterRequest;
 import requests.master.geo.GeoDistMasterRequest;
 import requests.master.geo.GeoPosMasterRequest;
+import requests.master.hashes.*;
 import requests.master.lists.*;
 import requests.master.pubsub.PublishRequest;
 import requests.master.pubsub.SubscribeRequest;
@@ -26,6 +27,10 @@ import requests.master.txn.MultiMasterRequest;
 import requests.master.zsets.*;
 import requests.model.Command;
 import requests.slave.InfoSlaveRequest;
+import requests.slave.hashes.HDelSlaveRequest;
+import requests.slave.hashes.HIncrBySlaveRequest;
+import requests.slave.hashes.HSetNXSlaveRequest;
+import requests.slave.hashes.HSetSlaveRequest;
 import requests.slave.lists.LPopSlaveRequest;
 import requests.slave.lists.LPushSlaveRequest;
 import requests.slave.lists.RPushSlaveRequest;
@@ -152,6 +157,39 @@ public class RequestParser {
                 case LLEN:
                     requests.add(new LLenMasterRequest(items.get(1)));
                     break;
+                case HSET:
+                    requests.add(new HSetMasterRequest(items.get(1), items.subList(2, items.size())));
+                    break;
+                case HSETNX:
+                    requests.add(new HSetNXMasterRequest(items.get(1), items.get(2), items.get(3)));
+                    break;
+                case HGET:
+                    requests.add(new HGetMasterRequest(items.get(1), items.get(2)));
+                    break;
+                case HMGET:
+                    requests.add(new HMGetMasterRequest(items.get(1), items.subList(2, items.size())));
+                    break;
+                case HGETALL:
+                    requests.add(new HGetAllMasterRequest(items.get(1)));
+                    break;
+                case HKEYS:
+                    requests.add(new HKeysMasterRequest(items.get(1)));
+                    break;
+                case HVALS:
+                    requests.add(new HValsMasterRequest(items.get(1)));
+                    break;
+                case HEXISTS:
+                    requests.add(new HExistsMasterRequest(items.get(1), items.get(2)));
+                    break;
+                case HLEN:
+                    requests.add(new HLenMasterRequest(items.get(1)));
+                    break;
+                case HDEL:
+                    requests.add(new HDelMasterRequest(items.get(1), items.subList(2, items.size())));
+                    break;
+                case HINCRBY:
+                    requests.add(new HIncrByMasterRequest(items.get(1), items.get(2), Integer.parseInt(items.get(3))));
+                    break;
                 case INFO:
                     requests.add(new InfoMasterRequest());
                     break;
@@ -246,6 +284,27 @@ public class RequestParser {
                 case LLEN:
                     requests.add(new LLenMasterRequest(items.get(1)));
                     break;
+                case HGET:
+                    requests.add(new HGetMasterRequest(items.get(1), items.get(2)));
+                    break;
+                case HMGET:
+                    requests.add(new HMGetMasterRequest(items.get(1), items.subList(2, items.size())));
+                    break;
+                case HGETALL:
+                    requests.add(new HGetAllMasterRequest(items.get(1)));
+                    break;
+                case HKEYS:
+                    requests.add(new HKeysMasterRequest(items.get(1)));
+                    break;
+                case HVALS:
+                    requests.add(new HValsMasterRequest(items.get(1)));
+                    break;
+                case HEXISTS:
+                    requests.add(new HExistsMasterRequest(items.get(1), items.get(2)));
+                    break;
+                case HLEN:
+                    requests.add(new HLenMasterRequest(items.get(1)));
+                    break;
                 case INFO:
                     requests.add(new InfoSlaveRequest());
                     break;
@@ -305,6 +364,18 @@ public class RequestParser {
                     Integer count = items.size() == 3 ? Integer.parseInt(items.get(2)) : null;
                     requests.add(new LPopSlaveRequest(items.get(1), count));
                     break;
+                case HSET:
+                    requests.add(new HSetSlaveRequest(items.get(1), items.subList(2, items.size())));
+                    break;
+                case HSETNX:
+                    requests.add(new HSetNXSlaveRequest(items.get(1), items.get(2), items.get(3)));
+                    break;
+                case HDEL:
+                    requests.add(new HDelSlaveRequest(items.get(1), items.subList(2, items.size())));
+                    break;
+                case HINCRBY:
+                    requests.add(new HIncrBySlaveRequest(items.get(1), items.get(2), Integer.parseInt(items.get(3))));
+                    break;
                 case ZADD:
                     requests.add(new ZAddSlaveRequest(items.get(1), Double.parseDouble(items.get(2)), items.get(3)));
                     break;
@@ -344,6 +415,14 @@ public class RequestParser {
             case LPOP:
                 Integer count = parts.get(2).equals(NULL_STRING) ? null : Integer.parseInt(parts.get(2));
                 return new LPopSlaveRequest(parts.get(1), count);
+            case HSET:
+                return new HSetSlaveRequest(parts.get(1), parts.subList(2, parts.size()));
+            case HSETNX:
+                return new HSetNXSlaveRequest(parts.get(1), parts.get(2), parts.get(3));
+            case HDEL:
+                return new HDelSlaveRequest(parts.get(1), parts.subList(2, parts.size()));
+            case HINCRBY:
+                return new HIncrBySlaveRequest(parts.get(1), parts.get(2), Integer.parseInt(parts.get(3)));
             case ZADD:
                 return new ZAddSlaveRequest(parts.get(1), Double.parseDouble(parts.get(2)), parts.get(3));
             case ZREM:

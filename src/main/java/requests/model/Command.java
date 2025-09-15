@@ -24,6 +24,18 @@ public enum Command {
     EXEC("EXEC"),
     DISCARD("DISCARD"),
 
+    HSET("HSET"),
+    HSETNX("HSETNX"),
+    HGET("HGET"),
+    HMGET("HMGET"),
+    HGETALL("HGETALL"),
+    HKEYS("HKEYS"),
+    HVALS("HVALS"),
+    HEXISTS("HEXISTS"),
+    HLEN("HLEN"),
+    HDEL("HDEL"),
+    HINCRBY("HINCRBY"),
+
     XADD("XADD"),
     XRANGE("XRANGE"),
     XREAD("XREAD"),

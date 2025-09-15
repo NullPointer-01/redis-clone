@@ -8,18 +8,22 @@ import exceptions.InvalidEntryIdException;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static constants.Constants.*;
 
 public class InMemoryStorage<K, V extends Comparable<? super V>> implements Storage<K, V> {
     private final Map<K, Map.Entry<Long,V>> valuesMap;
     private final Map<K, List<V>> listsMap;
+    private final Map<K, Map<K, V>> hashesMap;
     public final Map<K, Stream<K, V>> streamsMap;
     public final Map<K, SortedSet<V>> sortedSetsMap;
 
     public InMemoryStorage() {
         valuesMap = new ConcurrentHashMap<>();
         listsMap = new ConcurrentHashMap<>();
+        hashesMap = new ConcurrentHashMap<>();
         streamsMap = new ConcurrentHashMap<>();
         sortedSetsMap = new ConcurrentHashMap<>();
     }
@@ -108,6 +112,114 @@ public class InMemoryStorage<K, V extends Comparable<? super V>> implements Stor
     @Override
     public Integer lLen(K listKey) {
         return listsMap.containsKey(listKey) ? listsMap.get(listKey).size() : 0;
+    }
+
+    @Override
+    public Integer hSet(K hashKey, List<Pair<K, V>> fieldsAndValues) {
+        hashesMap.computeIfAbsent(hashKey, k -> new LinkedHashMap<>());
+
+        int count = 0;
+        Map<K, V> map = hashesMap.get(hashKey);
+
+        for (Pair<K, V> pair : fieldsAndValues) {
+            V prevVal = map.put(pair.getKey(), pair.getValue());
+            if (prevVal == null) count++;
+        }
+
+        return count;
+    }
+
+    @Override
+    public Integer hSetNX(K hashKey, K field, V value) {
+        Map<K, V> map = hashesMap.get(hashKey);
+        if (map != null && map.containsKey(field)) {
+            return 0;
+        }
+
+        if (map == null) {
+            map = new LinkedHashMap<>();
+        }
+        map.put(field, value);
+
+        return 1;
+    }
+
+    @Override
+    public Optional<V> hGet(K hashKey, K field) {
+        Map<K, V> map = hashesMap.get(hashKey);
+        if (map == null || !map.containsKey(field)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(map.get(field));
+    }
+
+    @Override
+    public List<V> hMGet(K hashKey, List<K> fields) {
+        Map<K, V> map = hashesMap.get(hashKey);
+        if (map == null) {
+            return IntStream.range(0, fields.size())
+                    .mapToObj(i -> (V) null)
+                    .collect(Collectors.toList());
+        }
+
+        List<V> values = new ArrayList<>(fields.size());
+        for (K field : fields) {
+            values.add(map.get(field));
+        }
+
+        return values;
+    }
+
+    @Override
+    public List<Pair<K, V>> hGetAll(K hashKey) {
+        Map<K, V> map = hashesMap.get(hashKey);
+        if (map == null) {
+            return Collections.emptyList();
+        }
+
+        List<Pair<K, V>> fieldsAndValues = new ArrayList<>(map.size());
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            fieldsAndValues.add(new Pair<>(entry.getKey(), entry.getValue()));
+        }
+
+        return fieldsAndValues;
+    }
+
+    @Override
+    public Integer hDel(K hashKey, List<K> fields) {
+        Map<K, V> map = hashesMap.get(hashKey);
+        if (map == null) {
+            return 0;
+        }
+
+        int count = 0;
+        for (K field : fields) {
+            if (map.containsKey(field)) {
+                count++;
+                map.remove(field);
+            }
+        }
+
+        return count;
+    }
+
+    @Override
+    public List<K> hKeys(K hashKey) {
+        Map<K, V> map = hashesMap.get(hashKey);
+        return map == null ? Collections.emptyList() : new ArrayList<>(map.keySet());
+    }
+
+    @Override
+    public List<V> hVals(K hashKey) {
+        Map<K, V> map = hashesMap.get(hashKey);
+        return map == null ? Collections.emptyList() : new ArrayList<>(map.values());
+    }
+
+    @Override
+    public Integer hLen(K hashKey) {
+        Map<K, V> map = hashesMap.get(hashKey);
+        return map == null ? 0 : map.size();
     }
 
     @Override

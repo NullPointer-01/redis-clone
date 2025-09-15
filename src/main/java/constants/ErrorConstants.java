@@ -5,6 +5,7 @@ public class ErrorConstants {
     public static final String ERROR_MISSING_ARGUMENT = "-ERR wrong number of arguments for '%s' command\r\n";
 
     public static final String ERROR_NOT_AN_INTEGER = "-ERR value is not an integer or out of range\r\n";
+    public static final String ERROR_HASH_NOT_AN_INTEGER = "-ERR hash value is not an integer\r\n";
 
     public static final String ERROR_EXEC_WITHOUT_MULTI = "-ERR EXEC without MULTI\r\n";
     public static final String ERROR_DISCARD_WITHOUT_MULTI = "-ERR DISCARD without MULTI\r\n";
