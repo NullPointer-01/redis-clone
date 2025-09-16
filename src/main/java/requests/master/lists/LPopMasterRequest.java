@@ -11,6 +11,7 @@ import service.MasterReplicationHandler;
 import util.RespSerializer;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import static util.RespConstants.EMPTY_RESP_ARRAY;
@@ -44,7 +45,13 @@ public class LPopMasterRequest extends AbstractRequest {
 
     @Override
     public void postExecute(Client ignored) {
-        List<String> requestParts = List.of(command.getName(), listKey, String.valueOf(count));
+        List<String> requestParts = new ArrayList<>();
+        requestParts.add(command.getName());
+        requestParts.add(listKey);
+
+        if (count != null) {
+            requestParts.add(String.valueOf(count));
+        }
 
         byte[] request = RespSerializer.asArray(requestParts).getBytes(StandardCharsets.UTF_8);
         MasterReplicationHandler.getInstance().propagateRequests(request);

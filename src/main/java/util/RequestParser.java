@@ -46,7 +46,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static constants.Constants.NULL_STRING;
 import static util.RespConstants.ASTERISK;
 
 public class RequestParser {
@@ -416,7 +415,7 @@ public class RequestParser {
             case LPUSH:
                 return new LPushSlaveRequest(parts.get(1), parts.subList(2, parts.size()));
             case LPOP:
-                Integer count = parts.get(2).equals(NULL_STRING) ? null : Integer.parseInt(parts.get(2));
+                Integer count = parts.size() == 3 ? Integer.parseInt(parts.get(2)) : null;
                 return new LPopSlaveRequest(parts.get(1), count);
             case HSET:
                 return new HSetSlaveRequest(parts.get(1), parts.subList(2, parts.size()));

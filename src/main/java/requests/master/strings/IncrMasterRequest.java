@@ -18,6 +18,7 @@ import static constants.ErrorConstants.ERROR_NOT_AN_INTEGER;
 
 public class IncrMasterRequest extends AbstractRequest {
     private final String key;
+    private boolean isSuccess;
 
     public IncrMasterRequest(String key) {
         super(Command.INCR);
@@ -31,6 +32,8 @@ public class IncrMasterRequest extends AbstractRequest {
         Optional<String> valueOpt = storage.get(key);
         if (valueOpt.isEmpty()) {
             storage.set(key, "1", null);
+            isSuccess = true;
+
             return new Response(RespSerializer.asInteger(1));
         }
 
@@ -39,6 +42,8 @@ public class IncrMasterRequest extends AbstractRequest {
             count++;
 
             storage.set(key, String.valueOf(count), null);
+            isSuccess = true;
+
             return new Response(RespSerializer.asInteger(count));
         } catch (NumberFormatException e) {
             return new Response(ERROR_NOT_AN_INTEGER);
@@ -47,6 +52,8 @@ public class IncrMasterRequest extends AbstractRequest {
 
     @Override
     public void postExecute(Client ignored) {
+        if (!isSuccess) return;
+
         List<String> requestParts = List.of(command.getName(), key);
 
         byte[] request = RespSerializer.asArray(requestParts).getBytes(StandardCharsets.UTF_8);
