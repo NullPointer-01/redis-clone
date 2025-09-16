@@ -16,6 +16,7 @@ public enum Command {
     LLEN("LLEN"),
     LPOP("LPOP"),
     LRANGE("LRANGE"),
+    BLPOP("BLPOP"),
 
     REPLCONF("REPLCONF"),
     PSYNC("PSYNC"),

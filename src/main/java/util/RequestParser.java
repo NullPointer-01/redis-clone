@@ -157,6 +157,9 @@ public class RequestParser {
                 case LLEN:
                     requests.add(new LLenMasterRequest(items.get(1)));
                     break;
+                case BLPOP:
+                    requests.add(new BLPopMasterRequest(items.subList(1, items.size()-1), 0));
+                    break;
                 case HSET:
                     requests.add(new HSetMasterRequest(items.get(1), items.subList(2, items.size())));
                     break;

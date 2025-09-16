@@ -44,6 +44,17 @@ public class Client {
         this.queuedRequests.add(request);
     }
 
+    public void blockClient() {
+        this.mode = MODE.BLOCKED;
+    }
+
+    public void unblockClient() {
+        if (!mode.equals(MODE.BLOCKED)) {
+            throw new UnsupportedOperationException("Cannot unblock a client that's not blocked");
+        }
+        this.mode = MODE.NORMAL;
+    }
+
     public void startTransaction() {
         if (!mode.equals(MODE.NORMAL)) {
             throw new UnsupportedOperationException("Can't start a transaction");
@@ -94,7 +105,7 @@ public class Client {
     }
 
     private enum MODE {
-        NORMAL, TRANSACTION, SUBSCRIBED;
+        NORMAL, TRANSACTION, SUBSCRIBED, BLOCKED
     }
 
     @Override
