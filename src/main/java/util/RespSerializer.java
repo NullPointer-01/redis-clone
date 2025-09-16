@@ -15,7 +15,10 @@ public class RespSerializer {
     private RespSerializer() {}
 
     public static String asBulkString(String data) {
-        if (data == null || data.isEmpty()) {
+        if (data == null) {
+            return NULL_BULK_STRING;
+        }
+        if (data.isEmpty()) {
             return EMPTY_BULK_STRING;
         }
 

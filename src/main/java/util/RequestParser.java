@@ -129,7 +129,7 @@ public class RequestParser {
                     requests.add(new EchoRequest(items.get(1)));
                     break;
                 case SET:
-                    Long timeToExpireInMillis = items.size() == 3 ? null : Long.parseLong(items.get(4));
+                    Long timeToExpireInMillis = items.size() == 3 ? null : Long.parseLong(items.get(3));
                     requests.add(new SetMasterRequest(items.get(1), items.get(2), timeToExpireInMillis));
                     break;
                 case GET:
@@ -402,7 +402,7 @@ public class RequestParser {
 
         switch (command) {
             case SET:
-                Long timeToExpireInMillis = parts.size() == 3 ? null : Long.parseLong(parts.get(4));
+                Long timeToExpireInMillis = parts.size() == 3 ? null : Long.parseLong(parts.get(3));
                 return new SetSlaveRequest(parts.get(1), parts.get(2), timeToExpireInMillis);
             case DEL:
                 return new DelSlaveRequest(parts.subList(1, parts.size()));
