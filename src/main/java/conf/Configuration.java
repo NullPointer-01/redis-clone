@@ -1,10 +1,12 @@
 package conf;
 
+import conf.ConfigurationConstants.FSYNC_POLICY;
 import conf.ConfigurationConstants.ROLE;
 
 public abstract class Configuration {
     private ROLE role;
     private Integer port;
+    private FSYNC_POLICY fsyncPolicy;
 
     public Configuration() {
     }
@@ -23,6 +25,14 @@ public abstract class Configuration {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public FSYNC_POLICY getFsyncPolicy() {
+        return fsyncPolicy;
+    }
+
+    public void setFsyncPolicy(FSYNC_POLICY fsyncPolicy) {
+        this.fsyncPolicy = fsyncPolicy;
     }
 
     public boolean isMaster() {

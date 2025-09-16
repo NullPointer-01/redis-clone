@@ -1,5 +1,6 @@
 package conf;
 
+import conf.ConfigurationConstants.FSYNC_POLICY;
 import conf.ConfigurationConstants.ROLE;
 import core.MasterServer;
 import core.Server;
@@ -9,6 +10,7 @@ public class ConfigurationUtil {
     public static Configuration getConfigurationFromArgs(String[] args) {
         Integer port = ConfigurationConstants.DEFAULT_PORT;
         ROLE role = ConfigurationConstants.DEFAULT_ROLE;
+        FSYNC_POLICY fsyncPolicy = ConfigurationConstants.DEFAULT_FSYNC_POLICY;
 
         String masterHost = null;
         Integer masterPort = null;
@@ -40,6 +42,7 @@ public class ConfigurationUtil {
         Configuration conf = new MasterConfiguration();
         conf.setPort(port);
         conf.setRole(role);
+        conf.setFsyncPolicy(fsyncPolicy);
 
         return conf;
     }

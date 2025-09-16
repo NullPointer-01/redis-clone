@@ -4,6 +4,7 @@ public class ConfigurationConstants {
     public static final ROLE DEFAULT_ROLE = ROLE.MASTER;
     public static final Integer DEFAULT_PORT = 6379;
 
+    public static final FSYNC_POLICY DEFAULT_FSYNC_POLICY = FSYNC_POLICY.EVERY_SEC;
     public static final String AOF_FILE_PATH = "src/main/resources/persistence/aof.txt";
 
     public enum ARGUMENT {
@@ -54,5 +55,9 @@ public class ConfigurationConstants {
 
             throw new IllegalArgumentException("Invalid name");
         }
+    }
+
+    public enum FSYNC_POLICY {
+        ALWAYS, EVERY_SEC, NO
     }
 }
