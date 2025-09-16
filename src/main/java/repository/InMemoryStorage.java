@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 import static constants.Constants.*;
 
 public class InMemoryStorage<K, V extends Comparable<? super V>> implements Storage<K, V> {
-    private final Map<K, Map.Entry<Long,V>> valuesMap;
+    private final Map<K, Pair<V, Long>> valuesMap;
     private final Map<K, List<V>> listsMap;
     private final Map<K, Map<K, V>> hashesMap;
     public final Map<K, Stream<K, V>> streamsMap;
@@ -31,23 +31,37 @@ public class InMemoryStorage<K, V extends Comparable<? super V>> implements Stor
     @Override
     public void set(K key, V value, Long timeToExpireInMillis) {
         Long expiryTimeInMillis = timeToExpireInMillis == null ? Long.MAX_VALUE : System.currentTimeMillis() + timeToExpireInMillis;
-        valuesMap.put(key, new AbstractMap.SimpleEntry<>(expiryTimeInMillis, value));
+        valuesMap.put(key, new Pair<>(value, expiryTimeInMillis));
     }
 
     @Override
     public Optional<V> get(K key) {
         if (valuesMap.containsKey(key)) {
-            Map.Entry<Long, V> entry = valuesMap.get(key);
-            Long expiryTimeInMillis = entry.getKey();
+            Pair<V, Long> pair = valuesMap.get(key);
+            Long expiryTimeInMillis = pair.getValue();
 
             if (expiryTimeInMillis <= System.currentTimeMillis()) {
                 return Optional.empty();
             }
 
-            return Optional.of(entry.getValue());
+            return Optional.of(pair.getKey());
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public Integer delete(List<K> keys) {
+        int count = 0;
+
+        for (K key : keys) {
+            boolean isValuesKeyRemoved = valuesMap.remove(key) != null;
+            boolean isListKeyRemoved = listsMap.remove(key) != null;
+
+            if (isValuesKeyRemoved || isListKeyRemoved) count++;
+        }
+
+        return count;
     }
 
     @Override
@@ -220,20 +234,6 @@ public class InMemoryStorage<K, V extends Comparable<? super V>> implements Stor
     public Integer hLen(K hashKey) {
         Map<K, V> map = hashesMap.get(hashKey);
         return map == null ? 0 : map.size();
-    }
-
-    @Override
-    public Integer delete(List<K> keys) {
-        int count = 0;
-
-        for (K key : keys) {
-            boolean isValuesKeyRemoved = valuesMap.remove(key) != null;
-            boolean isListKeyRemoved = listsMap.remove(key) != null;
-
-            if (isValuesKeyRemoved || isListKeyRemoved) count++;
-        }
-
-        return count;
     }
 
     @Override
