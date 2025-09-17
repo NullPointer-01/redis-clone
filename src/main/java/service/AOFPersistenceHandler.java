@@ -97,4 +97,8 @@ public class AOFPersistenceHandler {
             throw new RuntimeException(e);
         }
     }
+
+    public void shutdown() {
+        executorService.shutdown();
+    }
 }

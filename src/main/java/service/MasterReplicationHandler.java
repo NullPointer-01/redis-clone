@@ -99,4 +99,8 @@ public class MasterReplicationHandler extends Thread {
             }
         };
     }
+
+    public void shutdown() {
+        executorService.shutdown();
+    }
 }

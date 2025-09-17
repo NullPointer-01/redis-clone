@@ -125,6 +125,11 @@ public class BlockingOpsManager {
         return new Task(client, this);
     }
 
+    public void shutdown() {
+        executorService.shutdown();
+        scheduler.shutdown();
+    }
+
     private static class BlockingInfo {
         private final Map<Client, Set<String>> blockedClientsVsKeys;
         private final Map<String, Set<Client>> keysVsBlockedClients;
