@@ -16,17 +16,23 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import static util.RespConstants.NULL_BULK_STRING;
 
 public class BlockingOpsManager {
     private static BlockingOpsManager instance;
 
     private final ExecutorService executorService;
+    private final ScheduledExecutorService scheduler;
     private final BlockingInfo info;
 
     // Private constructor to enforce singleton pattern
     private BlockingOpsManager() {
         this.info = new BlockingInfo();
         this.executorService = Executors.newSingleThreadExecutor();
+        this.scheduler = Executors.newScheduledThreadPool(1);
     }
 
     public static BlockingOpsManager getInstance() {
@@ -44,6 +50,11 @@ public class BlockingOpsManager {
             case BLPOP -> {
                 BLPopMasterRequest req = (BLPopMasterRequest) request;
                 List<String> keys = req.getKeys();
+                long timeout = req.getTimeout();
+
+                if (timeout > 0) {
+                    scheduler.schedule(getScheduledUnblockTask(client), timeout, TimeUnit.SECONDS);
+                }
 
                 info.block(client, keys);
                 client.blockClient();
@@ -52,7 +63,7 @@ public class BlockingOpsManager {
     }
 
     public void handleUnblockingRequest(Request request) {
-        executorService.submit(() -> {
+        Runnable runnable = () -> {
             Command command = request.getCommand();
 
             try {
@@ -67,7 +78,9 @@ public class BlockingOpsManager {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        });
+        };
+
+        submitTask(runnable);
     }
 
     private void handleBLPopRequest(String listKey) throws IOException {
@@ -104,13 +117,25 @@ public class BlockingOpsManager {
         lPopRequest.postExecute(dummy);
     }
 
+    private void submitTask(Runnable runnable) {
+        executorService.submit(runnable);
+    }
+
+    private Runnable getScheduledUnblockTask(Client client) {
+        return new Task(client, this);
+    }
+
     private static class BlockingInfo {
         private final Map<Client, Set<String>> blockedClientsVsKeys;
         private final Map<String, Set<Client>> keysVsBlockedClients;
 
+        private final Map<Client, Long> clientsVsCounter;
+
         BlockingInfo() {
             this.blockedClientsVsKeys = new HashMap<>();
             this.keysVsBlockedClients = new HashMap<>();
+
+            this.clientsVsCounter = new HashMap<>();
         }
 
         void block(Client client, List<String> keys) {
@@ -121,14 +146,6 @@ public class BlockingOpsManager {
                 keysVsBlockedClients.computeIfAbsent(key, k -> new LinkedHashSet<>());
                 keysVsBlockedClients.get(key).add(client);
             }
-        }
-
-        boolean isKeyBlocked(String key) {
-            return keysVsBlockedClients.containsKey(key);
-        }
-
-        Collection<Client> getBlockedClients(String key) {
-            return keysVsBlockedClients.get(key);
         }
 
         void unblock(Collection<Client> clients) {
@@ -144,7 +161,54 @@ public class BlockingOpsManager {
                 }
 
                 blockedClientsVsKeys.remove(client);
+
+                Long counter = clientsVsCounter.getOrDefault(client, 0L);
+                clientsVsCounter.put(client, ++counter);
             }
+        }
+
+        boolean isKeyBlocked(String key) {
+            return keysVsBlockedClients.containsKey(key);
+        }
+
+        Collection<Client> getBlockedClients(String key) {
+            return keysVsBlockedClients.get(key);
+        }
+
+        long getLastExecutedCntr(Client client) {
+            return clientsVsCounter.getOrDefault(client, 0L);
+        }
+    }
+
+    private static class Task implements Runnable {
+        Client client;
+        long counter;
+        BlockingOpsManager manager;
+
+        Task(Client client, BlockingOpsManager manager) {
+            this.client = client;
+            this.counter = manager.info.getLastExecutedCntr(client) + 1;
+            this.manager = manager;
+        }
+
+        @Override
+        public void run() {
+            Runnable runnable = () -> {
+                long lastExecutedCounter = manager.info.getLastExecutedCntr(client);
+                if (counter <= lastExecutedCounter) return;
+
+                Response response = new Response(NULL_BULK_STRING);
+                try {
+                    client.write(response.getResponse());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                client.unblockClient();
+                manager.info.unblock(List.of(client));
+            };
+
+            manager.submitTask(runnable);
         }
     }
 }

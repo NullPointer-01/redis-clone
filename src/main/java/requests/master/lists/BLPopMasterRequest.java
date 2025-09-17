@@ -14,9 +14,9 @@ import java.util.List;
 
 public class BLPopMasterRequest implements Request {
     private final List<String> keys;
-    private final Integer timeout;
+    private final Long timeout;
 
-    public BLPopMasterRequest(List<String> keys, Integer timeout) {
+    public BLPopMasterRequest(List<String> keys, Long timeout) {
         this.keys = keys;
         this.timeout = timeout;
     }
@@ -46,7 +46,7 @@ public class BLPopMasterRequest implements Request {
         return keys;
     }
 
-    public Integer getTimeout() {
+    public Long getTimeout() {
         return timeout;
     }
 }
