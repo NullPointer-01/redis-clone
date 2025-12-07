@@ -5,7 +5,9 @@ public class ConfigurationConstants {
     public static final Integer DEFAULT_PORT = 6379;
 
     public static final FSYNC_POLICY DEFAULT_FSYNC_POLICY = FSYNC_POLICY.EVERY_SEC;
-    public static final String AOF_FILE_PATH = "src/main/resources/persistence/aof.txt";
+    public static final String DATA_DIR = System.getenv("DATA_DIR");
+
+    public static final String AOF_FILE_PATH = DATA_DIR + "/aof.txt";
 
     public enum ARGUMENT {
         PORT("--port"),
