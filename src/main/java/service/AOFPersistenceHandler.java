@@ -46,7 +46,7 @@ public class AOFPersistenceHandler {
                 this.executorService.scheduleAtFixedRate(this::flushToDisk, 1, 1, TimeUnit.SECONDS);
             }
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Append only file persistence setup failed");
+            LOGGER.log(Level.SEVERE, "Append only file persistence setup failed", e);
         }
     }
 
@@ -57,7 +57,7 @@ public class AOFPersistenceHandler {
                 writer.newLine();
                 writer.flush();
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "AOF write failed");
+                LOGGER.log(Level.SEVERE, "AOF write failed", e);
             }
         } else if (FSYNC_POLICY.EVERY_SEC.equals(fsyncPolicy)) {
             buffer.add(request);
@@ -74,7 +74,7 @@ public class AOFPersistenceHandler {
             }
             writer.flush();
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "AOF write failed");
+            LOGGER.log(Level.SEVERE, "AOF write failed", e);
         }
 
         buffer.clear();
