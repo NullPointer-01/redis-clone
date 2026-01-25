@@ -16,7 +16,7 @@ This project implements core Redis functionality from scratch, focusing on perfo
 - **Pub/Sub messaging**
 - **Streams**
 - **Transactions**
-- **Asynchronous Master–Slave Replication **
+- **Asynchronous Master–Slave Replication**
 - **Append-Only File (AOF) Persistence**
 
 ## Tech Stack
